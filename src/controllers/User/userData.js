@@ -1,4 +1,6 @@
 const User = require('../../models/User'); 
+const uploadImageToFirebase = require('../../firebase/firebaseImage')
+
 
 const updateUserProfile = async (req, res) => {
   const updates = {
@@ -49,4 +51,27 @@ const getUserProfile = async (req, res) => {
 };
 
 
-module.exports={updateUserProfile,getUserProfile}
+
+const uploadProfilePic = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const base64Image = req.body.image;
+    const url = await uploadImageToFirebase(`${user.username}_profile_pic.jpeg`, base64Image);
+
+    user.profilePic = url;
+
+    await user.save();
+
+    return res.status(200).json({ message: 'Profile picture uploaded successfully', url });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+
+module.exports={updateUserProfile,getUserProfile,uploadProfilePic}

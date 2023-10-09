@@ -3,7 +3,7 @@ const router = express.Router();
 const {signUp} = require('../controllers/Registration/signUp');
 const {login} = require('../controllers/Registration/login');
 const {recoverPassword,updatePassword,verifyUser} = require('../controllers/Registration/recoverPassword');
-const {updateUserProfile,getUserProfile} = require('../controllers/User/userData');
+const {updateUserProfile,getUserProfile,uploadProfilePic} = require('../controllers/User/userData');
 
 
 
@@ -25,5 +25,6 @@ router.post('/verify/otp', verifyUser);
 //Profile Update
 router.post('/profile',verifyToken, updateUserProfile);
 router.get('/profile',verifyToken, getUserProfile);
+router.post('/profile/pic',verifyToken, uploadProfilePic);
 
 module.exports = router;

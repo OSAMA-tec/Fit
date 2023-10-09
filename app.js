@@ -2,9 +2,11 @@ const express = require('express');
 const dbConnection = require('./src/config/db'); //  DB connection
 const signupRoute = require('./src/routes/userRoute');
 
+const bodyParser = require('body-parser');
 
 const app = express();
-
+app.use(bodyParser.json({ limit: '500mb' }));
+app.use(bodyParser.urlencoded({ limit: '500mb', extended: true }));
 // Connect to the DB
 dbConnection();
 app.use(express.json()); // for parsing application/json
