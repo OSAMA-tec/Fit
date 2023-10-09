@@ -28,7 +28,7 @@ const login= async (req, res) => {
         user.token = token;
 
         // user
-        res.status(200).json({msg:"Login Successfully!",TOKEN:token});
+        res.status(200).json({msg:"Login Successfully!",TOKEN:token,user});
     } else {
         res.status(400).send("Invalid Credentials");
     }
