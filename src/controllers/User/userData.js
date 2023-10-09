@@ -4,6 +4,7 @@ const uploadImageToFirebase = require('../../firebase/firebaseImage')
 
 const updateUserProfile = async (req, res) => {
   const updates = {
+    username: req.body.username,
     gender: req.body.gender,
     age: req.body.age,
     height: req.body.height,
