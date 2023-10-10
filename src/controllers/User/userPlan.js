@@ -8,7 +8,7 @@ const createPlan = async (req, res) => {
     }
 
     // Check if plan name is valid
-    const planNames = ['Premium', 'Elite', 'Special'];
+    const planNames = ['Free','Premium', 'Elite', 'Special'];
     if (!planNames.includes(req.body.name)) {
       return res.status(400).json({ error: 'Invalid plan name' });
     }
