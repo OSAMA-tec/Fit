@@ -4,6 +4,7 @@ const {signUp} = require('../controllers/Registration/signUp');
 const {login} = require('../controllers/Registration/login');
 const {recoverPassword,updatePassword,verifyUser} = require('../controllers/Registration/recoverPassword');
 const {updateUserProfile,getUserProfile,uploadProfilePic} = require('../controllers/User/userData');
+const {createPlan} = require('../controllers/User/userPlan');
 
 
 
@@ -26,5 +27,10 @@ router.post('/verify/otp', verifyUser);
 router.post('/profile',verifyToken, updateUserProfile);
 router.get('/profile',verifyToken, getUserProfile);
 router.post('/profile/pic',verifyToken, uploadProfilePic);
+
+
+
+//User Plan
+router.post('/user/plan',verifyToken, createPlan);
 
 module.exports = router;

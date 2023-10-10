@@ -13,6 +13,9 @@ const UserSchema = new Schema({
   password: {
     type: String,
     },
+  points: {
+    type: String,
+    },
   otp: {
     type: String,
     },
@@ -56,6 +59,10 @@ const UserSchema = new Schema({
   profilePic: {
     type: String,
     default: ''
+  },
+  plan: {
+    type: Schema.Types.ObjectId,
+    ref: 'Plan'
   }
 }, {
   timestamps: true
