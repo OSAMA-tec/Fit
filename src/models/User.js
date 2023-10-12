@@ -37,15 +37,12 @@ const UserSchema = new Schema({
     },
   workoutRoutine: {
     type: String,
-    enum: ['Gym', 'Home'],
     },
   fitnessLevel: {
     type: String,
-    enum: ['Beginner', 'Intermediate', 'Advanced'],
     },
   topGoal: {
     type: String,
-    enum: ['Maintaining', 'Bulking', 'Cutting'],
     },
   workoutPerWeek: {
     type: Number,
