@@ -20,7 +20,6 @@ const ExerciseSchema = new Schema({
   },
   dayOfWeek: {
     type: String,
-    enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
     required: true
   },
   collection: {
