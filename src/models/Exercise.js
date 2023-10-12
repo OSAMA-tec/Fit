@@ -4,28 +4,49 @@ const Schema = mongoose.Schema;
 const ExerciseSchema = new Schema({
   name: {
     type: String,
-    required: true
   },
   description: {
     type: String,
-    required: true
   },
   about: {
     type: String,
-    required: true
   },
   image: {
-    type: String,
-    required: true
+    type: [String],
   },
   dayOfWeek: {
     type: String,
-    required: true
   },
   collection: {
     type: Schema.Types.ObjectId,
     ref: 'Collection',
-    required: true
+  },
+  force: {
+    type: String,
+  },
+  level: {
+    type: String,
+  },
+  mechanic: {
+    type: String,
+  },
+  equipment: {
+    type: String,
+  },
+  primaryMuscles: {
+    type: [String],
+  },
+  secondaryMuscles: {
+    type: [String],
+  },
+  instructions: {
+    type: [String],
+  },
+  category: {
+    type: String,
+  },
+  id: {
+    type: String,
   }
 }, {
   timestamps: true
