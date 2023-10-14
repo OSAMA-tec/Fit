@@ -5,21 +5,28 @@ const ExerciseSchema = new Schema({
     type: String,
   },
   instructions: {
-    type: [String], // Assuming instructions should be an array of strings
+    type: [String],
   },
   about: {
+    type: String,
+  },
+  bodyPart: {
     type: String,
   },
   image: {
     type: [String],
   },
+  gifUrl: {
+    type: [String],
+  },
   dayOfWeek: {
     type: String,
   },
+  
   backgroundPic: {
     type: String,
   },
-  collectionRef: { // Changed from 'collection' to 'collectionRef'
+  collectionRef: { 
     type: Schema.Types.ObjectId,
     ref: 'Collection',
   },
@@ -30,6 +37,9 @@ const ExerciseSchema = new Schema({
     type: String,
   },
   mechanic: {
+    type: String,
+  },
+  target: {
     type: String,
   },
   equipment: {

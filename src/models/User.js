@@ -14,7 +14,7 @@ const UserSchema = new Schema({
     type: String,
     },
   points: {
-    type: String,
+    type: Number,
     },
   otp: {
     type: String,
