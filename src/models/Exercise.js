@@ -1,12 +1,11 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-
 const ExerciseSchema = new Schema({
   name: {
     type: String,
   },
-  description: {
-    type: String,
+  instructions: {
+    type: [String], // Assuming instructions should be an array of strings
   },
   about: {
     type: String,
@@ -17,7 +16,10 @@ const ExerciseSchema = new Schema({
   dayOfWeek: {
     type: String,
   },
-  collection: {
+  backgroundPic: {
+    type: String,
+  },
+  collectionRef: { // Changed from 'collection' to 'collectionRef'
     type: Schema.Types.ObjectId,
     ref: 'Collection',
   },
@@ -37,9 +39,6 @@ const ExerciseSchema = new Schema({
     type: [String],
   },
   secondaryMuscles: {
-    type: [String],
-  },
-  instructions: {
     type: [String],
   },
   category: {

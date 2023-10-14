@@ -1,6 +1,7 @@
 const express = require('express');
 const dbConnection = require('./src/config/db'); //  DB connection
 const signupRoute = require('./src/routes/userRoute');
+const exerciseRoute = require('./src/routes/exerciseRoute');
 
 const bodyParser = require('body-parser');
 
@@ -10,8 +11,10 @@ app.use(bodyParser.urlencoded({ limit: '500mb', extended: true }));
 // Connect to the DB
 dbConnection();
 app.use(express.json()); // for parsing application/json
+
+
 app.use('/api', signupRoute);
-app.use(express.json()); // Middleware for parsing JSON data
+app.use('/api', exerciseRoute);
 
 // Define your routes here
 
