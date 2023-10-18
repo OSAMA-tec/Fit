@@ -1,12 +1,23 @@
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+
 const MealPlanSchema = new Schema({
     user: {
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: true
     },
-    meals: {
-      type: [String],
-    },
+    mealPlan: [{
+      day: {
+        type: String,
+        enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+        required: true
+      },
+      meals: {
+        type: [String],
+        required: true
+      }
+    }],
     date: {
       type: Date,
       default: Date.now
@@ -15,5 +26,4 @@ const MealPlanSchema = new Schema({
     timestamps: true
   });
   
-  module.exports = mongoose.model('MealPlan', MealPlanSchema);
-  
+module.exports = mongoose.model('MealPlan', MealPlanSchema);
