@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const {getAllExercises,getExercisesByLevel,getExercisesByBodyPart} = require('../controllers/Exercises/getAll');
+const {getAllExercises,getExercisesByLevel,getExercisesByBodyPart,getExercisesByDayOfWeek} = require('../controllers/Exercises/getAll');
 
 
 
@@ -17,6 +17,10 @@ router.get('/exercise/level', getExercisesByLevel);
 
 //Exercise by BodyPart
 router.get('/exercise/body', getExercisesByBodyPart);
+
+
+//Exercise by weekDay
+router.get('/exercise/day', getExercisesByDayOfWeek);
 
 
 

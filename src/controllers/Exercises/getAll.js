@@ -41,4 +41,17 @@ const getExercisesByBodyPart = async (req, res) => {
   }
 };
 
-module.exports={getAllExercises,getExercisesByLevel,getExercisesByBodyPart};
+
+const getExercisesByDayOfWeek = async (req, res) => {
+  try {
+    const dayOfWeek = req.body.dayOfWeek;
+    const exercises = await Exercise.find({ dayOfWeek: dayOfWeek });
+    if (!exercises) {
+      return res.status(404).json({ message: 'No exercises found for this day of the week' });
+    }
+    res.status(200).json(exercises);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+module.exports={getAllExercises,getExercisesByLevel,getExercisesByBodyPart,getExercisesByDayOfWeek};
