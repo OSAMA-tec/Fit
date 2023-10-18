@@ -16,7 +16,7 @@ router.get('/exercise/level', getExercisesByLevel);
 
 
 //Exercise by BodyPart
-router.get('/exercise/level', getExercisesByBodyPart);
+router.get('/exercise/body', getExercisesByBodyPart);
 
 
 
