@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const {getAllExercises,getExercisesByLevel} = require('../controllers/Exercises/getAll');
+const {getAllExercises,getExercisesByLevel,getExercisesByBodyPart} = require('../controllers/Exercises/getAll');
 
 
 
@@ -8,9 +8,17 @@ const verifyToken = require('../middleware/auth');
 
 
 
-//Exercises
+//Exercises For User
 router.get('/exercise', getAllExercises);
+
+//Exercise by Level
 router.get('/exercise/level', getExercisesByLevel);
+
+
+//Exercise by BodyPart
+router.get('/exercise/level', getExercisesByBodyPart);
+
+
 
 
 module.exports = router;

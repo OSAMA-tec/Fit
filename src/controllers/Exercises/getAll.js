@@ -27,4 +27,18 @@ const getExercisesByLevel = async (req, res) => {
   }
 };
 
-module.exports={getAllExercises,getExercisesByLevel}
+
+const getExercisesByBodyPart = async (req, res) => {
+  try {
+    const bodyPart = req.body.bodyPart;
+    const exercises = await Exercise.find({ bodyPart: bodyPart });
+    if (!exercises) {
+      return res.status(404).json({ message: 'No exercises found for this body part' });
+    }
+    res.status(200).json(exercises);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports={getAllExercises,getExercisesByLevel,getExercisesByBodyPart};

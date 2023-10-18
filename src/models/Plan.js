@@ -9,7 +9,20 @@ const PlanSchema = new Schema({
     collections: [{
       type: Schema.Types.ObjectId,
       ref: 'Collection'
-    }]
+    }],
+    subscription: {
+      type: String,
+      // enum: ['one month', 'three months', 'six months', 'one year'],
+      required: true
+    },
+    startDate: {
+      type: Date,
+      default: Date.now
+    },
+    durationInDays: {
+      type: Number,
+      required: true
+    }
   }, {
     timestamps: true
   });
