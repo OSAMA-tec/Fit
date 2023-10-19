@@ -2,7 +2,7 @@
 
 const axios = require('axios');
 const User = require('../../models/User');
-const MealPlan = require('../../models/MealPlan');
+const MealPlan = require('../../models/Meal');
 
 const generateAndSaveMealPlan = async (req, res) => {
   try {
