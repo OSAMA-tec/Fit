@@ -6,6 +6,7 @@ const getMealPlanByUserId = async (req, res) => {
   try {
     const userId = req.user.id;
     const mealPlan = await MealPlan.findOne({ user: userId });
+    console.log(userId)
     if (!mealPlan) {
       return res.status(404).json({ message: 'No meal plan found for this user' });
     }

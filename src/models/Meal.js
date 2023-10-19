@@ -1,3 +1,4 @@
+
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
@@ -13,10 +14,16 @@ const MealPlanSchema = new Schema({
         enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
         required: true
       },
-      meals: {
-        type: [String],
-        required: true
-      }
+      meals: [{
+        mealName: {
+          type: String,
+          required: true
+        },
+        mealItems: {
+          type: [String],
+          required: true
+        }
+      }]
     }],
     date: {
       type: Date,

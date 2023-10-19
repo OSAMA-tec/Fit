@@ -1,4 +1,3 @@
-// controllers/mealPlanController.js
 
 const axios = require('axios');
 const User = require('../../models/User');
@@ -36,7 +35,11 @@ const generateAndSaveMealPlan = async (req, res) => {
       };
 
       const response = await axios.request(options);
-      mealPlan.push({ day: days[i], meals: response.data.choices });
+      const meals = response.data.choices[0].message.content.split('\n\n').map(meal => {
+        const [mealName, ...mealItems] = meal.split('\n');
+        return { mealName, mealItems };
+      });
+      mealPlan.push({ day: days[i], meals: meals });
     }
 
     const newMealPlan = new MealPlan({ user: userId, mealPlan: mealPlan });
@@ -47,6 +50,5 @@ const generateAndSaveMealPlan = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 
 module.exports={generateAndSaveMealPlan}
