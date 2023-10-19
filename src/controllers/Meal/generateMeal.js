@@ -1,4 +1,3 @@
-// controllers/mealPlanController.js
 
 const axios = require('axios');
 const User = require('../../models/User');
@@ -12,6 +11,9 @@ const generateAndSaveMealPlan = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
+
+    // Delete any existing meal plan for the user
+    await MealPlan.findOneAndDelete({ user: userId });
 
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     const mealPlan = [];
