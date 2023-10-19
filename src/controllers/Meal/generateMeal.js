@@ -3,6 +3,7 @@
 const axios = require('axios');
 const User = require('../../models/User');
 const MealPlan = require('../../models/Meal');
+require('dotenv').config();
 
 const generateAndSaveMealPlan = async (req, res) => {
   try {
