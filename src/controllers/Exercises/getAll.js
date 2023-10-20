@@ -26,7 +26,6 @@ const getExercises = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-const Exercise = require('../../models/Exercise');
 
 const getAllExercises = async (req, res) => {
   try {
