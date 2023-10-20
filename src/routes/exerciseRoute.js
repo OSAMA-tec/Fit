@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const {getAllExercises,getExercises,getExercisesByBodyPart,getExercisesByDayOfWeek} = require('../controllers/Exercises/getAll');
+const {getAllExercises,getExercises,getExercisesByBodyPart,getExercisesByDayOfWeek,getExercisesByLevel} = require('../controllers/Exercises/getAll');
 
 
 
