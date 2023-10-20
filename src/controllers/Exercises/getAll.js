@@ -1,5 +1,31 @@
-// exerciseController.js
+// controllers/exerciseController.js
 
+const Exercise = require('../../models/Exercise');
+const User = require('../../models/User');
+
+const getExercises = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const level = user.fitnessLevel;
+    const bodyPart = req.body.bodyPart;
+    const dayOfWeek = req.body.dayOfWeek;
+
+    const exercises = await Exercise.find({ level, bodyPart, dayOfWeek });
+
+    if (!exercises || exercises.length === 0) {
+      return res.status(404).json({ message: 'No exercises found for the given criteria' });
+    }
+
+    res.status(200).json(exercises);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 const Exercise = require('../../models/Exercise');
 
 const getAllExercises = async (req, res) => {
@@ -54,4 +80,5 @@ const getExercisesByDayOfWeek = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-module.exports={getAllExercises,getExercisesByLevel,getExercisesByBodyPart,getExercisesByDayOfWeek};
+module.exports={getAllExercises,getExercisesByLevel,getExercisesByBodyPart,getExercisesByDayOfWeek,getExercises};
+

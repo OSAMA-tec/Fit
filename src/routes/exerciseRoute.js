@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const {getAllExercises,getExercisesByLevel,getExercisesByBodyPart,getExercisesByDayOfWeek} = require('../controllers/Exercises/getAll');
+const {getAllExercises,getExercises,getExercisesByBodyPart,getExercisesByDayOfWeek} = require('../controllers/Exercises/getAll');
 
 
 
@@ -9,10 +9,10 @@ const verifyToken = require('../middleware/auth');
 
 
 //Exercises For User
-router.get('/exercise', getAllExercises);
+router.get('/exercise/all', getAllExercises);
 
 //Exercise by Level
-router.get('/exercise/level', getExercisesByLevel);
+router.get('/exercise',verifyToken, getExercises);
 
 
 //Exercise by BodyPart
