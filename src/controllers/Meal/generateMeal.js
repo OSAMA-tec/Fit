@@ -11,8 +11,14 @@ const generateAndSaveMealPlan = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-
-    // Delete any existing meal plan for the user
+    const lastMealPlan = await MealPlan.findOne({ user: userId }).sort({ date: -1 });
+    if (lastMealPlan) {
+      const currentDate = new Date();
+      const daysSinceLastMealPlan = (currentDate - lastMealPlan.date) / (1000 * 60 * 60 * 24);
+      if (daysSinceLastMealPlan < 7) {
+        return res.status(400).json({ message: 'You cannot generate a new meal plan within 7 days of your last meal plan' });
+      }
+    }
     await MealPlan.findOneAndDelete({ user: userId });
 
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
