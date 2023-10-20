@@ -41,6 +41,9 @@ const UserSchema = new Schema({
   fitnessLevel: {
     type: String,
     },
+  role: {
+    type: String,
+    },
   topGoal: {
     type: String,
     },

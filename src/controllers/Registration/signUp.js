@@ -7,9 +7,8 @@ dotenv.config();
 const saltRounds = 10;
 
 const signUp = async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, role } = req.body;
 
-  // Check if username, email, and password are provided
   if (!username) {
     return res.status(400).json({ error: 'Username is required' });
   }
@@ -23,7 +22,6 @@ const signUp = async (req, res) => {
   }
 
   try {
-    // Check if a user with the same email or username already exists
     const existingUserEmail = await User.findOne({ email });
     const existingUserUsername = await User.findOne({ username });
 
@@ -35,28 +33,26 @@ const signUp = async (req, res) => {
       return res.status(400).json({ error: 'A user with this username already exists' });
     }
 
-    // Hash the password using bcrypt
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     const user = new User({
       username,
       email,
-      password: hashedPassword
+      password: hashedPassword,
+      role: role || 'user'
     });
 
     await user.save();
 
-    // Create token
+    const jwtSecret = user.role === 'admin' ? process.env.JWT_SECRET_Admin : process.env.JWT_SECRET;
     const token = jwt.sign(
-        { id: user._id, username: user.username, email: user.email },
-        process.env.JWT_SECRET,
+        { id: user._id, username: user.username, email: user.email, role: user.role },
+        jwtSecret,
         { expiresIn: "30d" }
     );
 
-    // Save user token
     user.token = token;
 
-    // Respond with token and user data
     res.status(201).json({ message: 'User created successfully', TOKEN: token, user });
   } catch (err) {
     console.error(err);
