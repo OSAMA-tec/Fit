@@ -1,4 +1,3 @@
-// controllers/mealPlanController.js
 
 const MealPlan = require('../../models/Meal');
 

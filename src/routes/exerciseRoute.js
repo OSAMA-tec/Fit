@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const {getAllExercises,getExercises,getExercisesByBodyPart,getExercisesByDayOfWeek,getExercisesByLevel} = require('../controllers/Exercises/getAll');
+const {createExercise,upload} = require('../controllers/Exercises/createExercise');
 
 
 
@@ -26,6 +27,8 @@ router.get('/exercise/day',verifyToken, getExercisesByDayOfWeek);
 router.get('/exercise/level',verifyToken, getExercisesByLevel);
 
 
+//Create Exercise
+router.post('/admin/exercise', upload.fields([{ name: 'gifs', maxCount: 10 }, { name: 'video', maxCount: 1 }]),verifyToken, createExercise);
 
 
 module.exports = router;
