@@ -1,4 +1,3 @@
-// controllers/exerciseController.js
 
 const Exercise = require('../../models/Exercise');
 const User = require('../../models/User');
@@ -9,11 +8,9 @@ const getExercisesWithPaidStatus = async (userId, query) => {
     return null;
   }
 
-  // If the user is an admin, return all exercises
   if (user.role === 'admin') {
     return await Exercise.find(query);
   }
-
   const hasPlan = user.plan != null;
   const paid = hasPlan ? { $in: [true, false] } : false;
 
