@@ -11,8 +11,8 @@ const generateAndSaveMealPlan = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    if (!user.plan || user.plan.type !== 'premium') {
-      return res.status(403).json({ message: 'You need to subscribe to a premium plan to generate a meal plan' });
+    if (!user.plan || user.plan.type !== 'elite') {
+      return res.status(403).json({ message: 'You need to subscribe to a elite plan to generate a meal plan' });
     }
 
     const lastMealPlan = await MealPlan.findOne({ user: userId }).sort({ date: -1 });
