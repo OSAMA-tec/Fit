@@ -15,16 +15,28 @@ const generateGymInfo = async (req, res) => {
       data: {
         model: 'llama-2-70b-chat',
         messages: [
-          {role: 'system', content: 'generate a gym quote, a meal plan with one meal, an random exercise, and a food name'}
+          {role: 'system', content: `generate random things`},
+          {role: 'user', content: 'generate a random gym quote, a meal plan with random one meal, an random exercise, and a random food name'}
         ],
         max_tokens: 3000
       }
     };
 
     const response = await axios.request(options);
-    const gymInfo = response.data.choices[0].message.content;
+    const gymInfoString = response.data.choices[0].message.content;
 
-    res.status(200).json({ gymInfo });
+   const parts = gymInfoString.split('\n\n');
+
+   const gymInfo = {
+     gymQuote: parts[1],
+     mealPlan: {
+       breakfast: parts[3]
+     },
+     exercise: parts[4],
+     foodName: parts[5]
+   };
+
+   res.status(200).json({ gymInfo });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
