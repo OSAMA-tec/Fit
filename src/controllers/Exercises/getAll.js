@@ -1,40 +1,17 @@
+// controllers/exerciseController.js
 
 const Exercise = require('../../models/Exercise');
 const User = require('../../models/User');
-
-const getExercises = async (req, res) => {
-  try {
-    const userId = req.user.id;
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    const level = user.fitnessLevel;
-    const bodyPart = req.body.bodyPart;
-    const dayOfWeek = req.body.dayOfWeek;
-
-    const hasPlan = user.plan != null;
-
-    const paid = hasPlan ? { $in: [true, false] } : false;
-
-    const exercises = await Exercise.find({ level, bodyPart, dayOfWeek, paid });
-
-    if (!exercises || exercises.length === 0) {
-      return res.status(404).json({ message: 'No exercises found for the given criteria' });
-    }
-
-    res.status(200).json(exercises);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
 
 const getExercisesWithPaidStatus = async (userId, query) => {
   const user = await User.findById(userId);
   if (!user) {
     return null;
+  }
+
+  // If the user is an admin, return all exercises
+  if (user.role === 'admin') {
+    return await Exercise.find(query);
   }
 
   const hasPlan = user.plan != null;
@@ -101,6 +78,30 @@ const getExercisesByDayOfWeek = async (req, res) => {
   }
 };
 
+const getExercises = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const level = user.fitnessLevel;
+    const bodyPart = req.body.bodyPart;
+    const dayOfWeek = req.body.dayOfWeek;
+
+    const exercises = await getExercisesWithPaidStatus(userId, { level, bodyPart, dayOfWeek });
+
+    if (!exercises || exercises.length === 0) {
+      return res.status(404).json({ message: 'No exercises found for the given criteria' });
+    }
+
+    res.status(200).json(exercises);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   getAllExercises,
   getExercisesByLevel,
@@ -108,4 +109,3 @@ module.exports = {
   getExercisesByDayOfWeek,
   getExercises
 };
-
