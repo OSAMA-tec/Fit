@@ -11,8 +11,11 @@ const getExercisesWithPaidStatus = async (userId, query) => {
   if (user.role === 'admin') {
     return await Exercise.find(query);
   }
+  console.log(user.role)
   const hasPlan = user.plan != null;
+  console.log(hasPlan)
   const paid = hasPlan ? { $in: [true, false] } : false;
+  console.log(paid)
 
   return await Exercise.find({ ...query, paid });
 };
@@ -88,7 +91,7 @@ const getExercises = async (req, res) => {
     const dayOfWeek = req.body.dayOfWeek;
 
     const exercises = await getExercisesWithPaidStatus(userId, { level, bodyPart, dayOfWeek });
-
+    console.log(exercises)
     if (!exercises || exercises.length === 0) {
       return res.status(404).json({ message: 'No exercises found for the given criteria' });
     }
