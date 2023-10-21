@@ -1,4 +1,3 @@
-// controllers/exerciseController.js
 
 const Exercise = require('../../models/Exercise');
 const User = require('../../models/User');
@@ -15,7 +14,11 @@ const getExercises = async (req, res) => {
     const bodyPart = req.body.bodyPart;
     const dayOfWeek = req.body.dayOfWeek;
 
-    const exercises = await Exercise.find({ level, bodyPart, dayOfWeek });
+    const hasPlan = user.plan != null;
+
+    const paid = hasPlan ? { $in: [true, false] } : false;
+
+    const exercises = await Exercise.find({ level, bodyPart, dayOfWeek, paid });
 
     if (!exercises || exercises.length === 0) {
       return res.status(404).json({ message: 'No exercises found for the given criteria' });
@@ -27,57 +30,82 @@ const getExercises = async (req, res) => {
   }
 };
 
+
+const getExercisesWithPaidStatus = async (userId, query) => {
+  const user = await User.findById(userId);
+  if (!user) {
+    return null;
+  }
+
+  const hasPlan = user.plan != null;
+  const paid = hasPlan ? { $in: [true, false] } : false;
+
+  return await Exercise.find({ ...query, paid });
+};
+
 const getAllExercises = async (req, res) => {
   try {
-    const exercises = await Exercise.find();
+    const userId = req.user.id;
+    const exercises = await getExercisesWithPaidStatus(userId, {});
+    if (!exercises) {
+      return res.status(404).json({ message: 'User not found' });
+    }
     res.status(200).json(exercises);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 
-
 const getExercisesByLevel = async (req, res) => {
   try {
+    const userId = req.user.id;
     const level = req.body.level;
-    console.log(level)
-    if(!level)
-    {
-      res.status(404).json({ message: "level not passed "});
+    if (!level) {
+      return res.status(404).json({ message: "level not passed" });
     }
-    const exercises = await Exercise.find({ level: level });
+    const exercises = await getExercisesWithPaidStatus(userId, { level });
+    if (!exercises) {
+      return res.status(404).json({ message: 'User not found' });
+    }
     res.status(200).json(exercises);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-
 
 const getExercisesByBodyPart = async (req, res) => {
   try {
+    const userId = req.user.id;
     const bodyPart = req.body.bodyPart;
-    const exercises = await Exercise.find({ bodyPart: bodyPart });
+    const exercises = await getExercisesWithPaidStatus(userId, { bodyPart });
     if (!exercises) {
-      return res.status(404).json({ message: 'No exercises found for this body part' });
+      return res.status(404).json({ message: 'User not found' });
     }
     res.status(200).json(exercises);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-
 
 const getExercisesByDayOfWeek = async (req, res) => {
   try {
+    const userId = req.user.id;
     const dayOfWeek = req.body.dayOfWeek;
-    const exercises = await Exercise.find({ dayOfWeek: dayOfWeek });
+    const exercises = await getExercisesWithPaidStatus(userId, { dayOfWeek });
     if (!exercises) {
-      return res.status(404).json({ message: 'No exercises found for this day of the week' });
+      return res.status(404).json({ message: 'User not found' });
     }
     res.status(200).json(exercises);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-module.exports={getAllExercises,getExercisesByLevel,getExercisesByBodyPart,getExercisesByDayOfWeek,getExercises};
+
+module.exports = {
+  getAllExercises,
+  getExercisesByLevel,
+  getExercisesByBodyPart,
+  getExercisesByDayOfWeek,
+  getExercises
+};
 

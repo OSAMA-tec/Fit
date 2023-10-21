@@ -4,6 +4,9 @@ const ExerciseSchema = new Schema({
   name: {
     type: String,
   },
+  paid: {
+    type: Boolean,
+  },
   instructions: {
     type: [String],
   },

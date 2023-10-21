@@ -9,21 +9,21 @@ const verifyToken = require('../middleware/auth');
 
 
 //Exercises For User
-router.get('/exercise/all', getAllExercises);
+router.get('/exercise/all',verifyToken, getAllExercises);
 
 //Exercise for user
 router.get('/exercise',verifyToken, getExercises);
 
 
 //Exercise by BodyPart
-router.get('/exercise/body', getExercisesByBodyPart);
+router.get('/exercise/body',verifyToken, getExercisesByBodyPart);
 
 
 //Exercise by weekDay
-router.get('/exercise/day', getExercisesByDayOfWeek);
+router.get('/exercise/day',verifyToken, getExercisesByDayOfWeek);
 
 //Exercise by level
-router.get('/exercise/level', getExercisesByLevel);
+router.get('/exercise/level',verifyToken, getExercisesByLevel);
 
 
 
