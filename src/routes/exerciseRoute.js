@@ -41,6 +41,6 @@ router.post('/admin/exercise', upload.fields([{ name: 'gifs', maxCount: 10 }, { 
 router.post('/body-part/upload', addBodyParts);
 
 //Get body Parts
-router.get('/body-part', getAllBodyParts);
+router.get('/body/part', getAllBodyParts);
 
 module.exports = router;
