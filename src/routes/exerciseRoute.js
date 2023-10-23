@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const {getAllExercises,getExercises,getExercisesByBodyPart,getExercisesByDayOfWeek,getExercisesByLevel} = require('../controllers/Exercises/getAll');
 const {createExercise,upload} = require('../controllers/Exercises/createExercise');
+const {addBodyParts} = require('../controllers/BodyParts/uploadBody');
 
 
 
@@ -30,5 +31,12 @@ router.get('/exercise/level',verifyToken, getExercisesByLevel);
 //Create Exercise
 router.post('/admin/exercise', upload.fields([{ name: 'gifs', maxCount: 10 }, { name: 'video', maxCount: 1 }]),verifyToken, createExercise);
 
+
+
+
+// ===========================================================================================================
+
+//Upload Body Parts
+router.post('/body-part/upload', addBodyParts);
 
 module.exports = router;

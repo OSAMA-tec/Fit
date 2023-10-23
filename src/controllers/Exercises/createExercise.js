@@ -34,7 +34,7 @@ const createExercise = async (req, res) => {
       const videoUrl = await uploadImageToFirebase(videoName, videoFile.buffer.toString('base64'));
       exerciseData.video = videoUrl;
     }
-
+    
     const exercise = new Exercise(exerciseData);
     await exercise.save();
 
