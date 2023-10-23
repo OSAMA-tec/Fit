@@ -1,6 +1,7 @@
 const axios = require('axios');
 const User = require('../../models/User');
 const MealPlan = require('../../models/Meal');
+const Plan = require('../../models/Plan');
 require('dotenv').config();
 
 const generateAndSaveMealPlan = async (req, res) => {
@@ -10,6 +11,22 @@ const generateAndSaveMealPlan = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
+
+    if (!user.plan) {
+      return res.status(403).json({ message: 'No plan activated' });
+    }
+
+    const plan = await Plan.findById(user.plan);
+    const startDate = plan.startDate;
+    const durationInDays = plan.durationInDays;
+    const endDate = startDate.setDate(startDate.getDate() + durationInDays);
+    const currentDate = new Date();
+    const remainingDays = Math.ceil((endDate - currentDate) / (1000 * 60 * 60 * 24));
+
+    if (plan.subscription !== 'elite') {
+      return res.status(403).json({ message: 'You need to subscribe to an elite plan to generate a meal plan', remainingDays });
+    }
+
 
     if (!user.plan || user.plan.type !== 'elite') {
       return res.status(403).json({ message: 'You need to subscribe to a elite plan to generate a meal plan' });
