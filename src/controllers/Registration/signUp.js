@@ -1,4 +1,5 @@
 const User = require('../../models/User');
+const Plan = require('../../models/Plan'); 
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
@@ -9,41 +10,46 @@ const saltRounds = 10;
 const signUp = async (req, res) => {
   const { username, email, password, role } = req.body;
 
-  if (!username) {
-    return res.status(400).json({ error: 'Username is required' });
-  }
-
-  if (!email) {
-    return res.status(400).json({ error: 'Email is required' });
-  }
-
-  if (!password) {
-    return res.status(400).json({ error: 'Password is required' });
+  // Check for required fields
+  if (!username || !email || !password) {
+    return res.status(400).json({ error: 'Username, email, and password are required' });
   }
 
   try {
+    // Check if user already exists
     const existingUserEmail = await User.findOne({ email });
     const existingUserUsername = await User.findOne({ username });
 
-    if (existingUserEmail) {
-      return res.status(400).json({ error: 'A user with this email already exists' });
+    if (existingUserEmail || existingUserUsername) {
+      return res.status(400).json({ error: 'A user with this email or username already exists' });
     }
 
-    if (existingUserUsername) {
-      return res.status(400).json({ error: 'A user with this username already exists' });
-    }
-
+    // Hash the password
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
+    // Create a new plan
+    const plan = new Plan({
+      name: 'free',
+      subscription: 'one month',
+      durationInDays: 30
+    });
+
+    // Save the plan
+    await plan.save();
+
+    // Create a new user
     const user = new User({
       username,
       email,
       password: hashedPassword,
-      role: role || 'user'
+      role: role || 'user',
+      plan: plan._id 
     });
 
+    // Save the user
     await user.save();
 
+    // Generate a JWT
     const jwtSecret = user.role === 'admin' ? process.env.JWT_SECRET_Admin : process.env.JWT_SECRET;
     const token = jwt.sign(
         { id: user._id, username: user.username, email: user.email, role: user.role },

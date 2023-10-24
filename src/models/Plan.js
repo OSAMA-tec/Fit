@@ -4,7 +4,6 @@ const Schema = mongoose.Schema;
 const PlanSchema = new Schema({
     name: {
       type: String,
-      required: true
     },
     collections: [{
       type: Schema.Types.ObjectId,
@@ -13,7 +12,6 @@ const PlanSchema = new Schema({
     subscription: {
       type: String,
       // enum: ['one month', 'three months', 'six months', 'one year'],
-      required: true
     },
     startDate: {
       type: Date,
@@ -21,7 +19,6 @@ const PlanSchema = new Schema({
     },
     durationInDays: {
       type: Number,
-      required: true
     }
   }, {
     timestamps: true
