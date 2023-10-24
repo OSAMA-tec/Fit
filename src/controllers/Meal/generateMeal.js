@@ -27,8 +27,9 @@ const generateAndSaveMealPlan = async (req, res) => {
       return res.status(403).json({ message: 'You need to subscribe to an elite plan to generate a meal plan', remainingDays });
     }
 
-
-    if (!user.plan || user.plan.type !== 'elite') {
+    console.log(user.plan)
+    console.log(user.plan.name)
+    if (!user.plan || user.plan.name !== 'elite') {
       return res.status(403).json({ message: 'You need to subscribe to a elite plan to generate a meal plan' });
     }
 
