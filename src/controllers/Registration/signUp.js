@@ -41,6 +41,7 @@ const signUp = async (req, res) => {
     const user = new User({
       username,
       email,
+      fitnessLevel:'intermediate',
       password: hashedPassword,
       role: role || 'user',
       plan: plan._id 
