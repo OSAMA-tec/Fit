@@ -23,7 +23,7 @@ const generateAndSaveMealPlan = async (req, res) => {
     const currentDate = new Date();
     const remainingDays = Math.ceil((endDate - currentDate) / (1000 * 60 * 60 * 24));
 
-    if (plan.subscription !== 'elite') {
+    if (plan.name !== 'elite') {
       return res.status(403).json({ message: 'You need to subscribe to an elite plan to generate a meal plan', remainingDays });
     }
 
