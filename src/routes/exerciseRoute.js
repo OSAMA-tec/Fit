@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const {getAllExercises,getExercises,getExercisesByBodyPart,getExercisesByDayOfWeek,getExercisesByLevel} = require('../controllers/Exercises/getAll');
+const {getAllExercises,getExercises,getExercisesByBodyPart,getExercisesByDayOfWeek,getExercisesByLevel,getExerciseById} = require('../controllers/Exercises/getAll');
 const {createExercise,upload} = require('../controllers/Exercises/createExercise');
 const {addBodyParts} = require('../controllers/BodyParts/uploadBody');
 const {getAllBodyParts} = require('../controllers/BodyParts/getBody');
@@ -27,6 +27,8 @@ router.get('/exercise/day',verifyToken, getExercisesByDayOfWeek);
 
 //Exercise by level
 router.get('/exercise/level',verifyToken, getExercisesByLevel);
+//Exercise by Id
+router.get('/exercise/id',verifyToken, getExerciseById);
 
 
 //Create Exercise

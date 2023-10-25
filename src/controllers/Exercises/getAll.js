@@ -114,10 +114,27 @@ const getExercises = async (req, res) => {
   }
 };
 
+const getExerciseById = async (req, res) => {
+  try {
+    const exerciseId = req.body.id;
+    const userId = req.user.id; 
+
+    const exercises = await getExercisesWithPaidStatus(userId, { _id: exerciseId });
+    console.log(exercises)
+    if (!exercises || exercises.length === 0) {
+      return res.status(404).json({ message: 'Exercise not found' });
+    }
+    res.status(200).json(exercises);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   getAllExercises,
   getExercisesByLevel,
   getExercisesByBodyPart,
   getExercisesByDayOfWeek,
-  getExercises
+  getExercises,
+  getExerciseById
 };
