@@ -2,7 +2,6 @@
 const Exercise = require('../../models/Exercise');
 const User = require('../../models/User');
 const Plan = require('../../models/Plan');
-
 const getExercisesWithPaidStatus = async (userId, query) => {
   const user = await User.findById(userId);
   if (!user) {
@@ -25,13 +24,17 @@ const getExercisesWithPaidStatus = async (userId, query) => {
   const currentDate = new Date();
   const remainingDays = Math.ceil((endDate - currentDate) / (1000 * 60 * 60 * 24));
 
-  const paid = { $in: [true, false] };
+  let paid;
+  if (plan.name === 'free') {
+    paid = { $in: [false] };
+  } else {
+    paid = { $in: [true, false] };
+  }
 
   const exercises = await Exercise.find({ ...query, paid });
 
   return { message: `Subscription period left: ${remainingDays} days`, exercises };
 };
-
 const getAllExercises = async (req, res) => {
   try {
     const userId = req.user.id;
