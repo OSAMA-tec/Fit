@@ -28,7 +28,7 @@ router.get('/exercise/day',verifyToken, getExercisesByDayOfWeek);
 //Exercise by level
 router.get('/exercise/level',verifyToken, getExercisesByLevel);
 //Exercise by Id
-router.get('/exercise/id',verifyToken, getExerciseById);
+router.get('/exercise/random',verifyToken, getExerciseById);
 
 
 //Create Exercise

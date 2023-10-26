@@ -116,15 +116,19 @@ const getExercises = async (req, res) => {
 
 const getExerciseById = async (req, res) => {
   try {
-    const exerciseId = req.body.id;
-    const userId = req.user.id; 
+    const userId = req.user.id;
 
-    const exercises = await getExercisesWithPaidStatus(userId, { _id: exerciseId });
-    console.log(exercises)
+    const exercises = await getExercisesWithPaidStatus(userId);
+    console.log(exercises);
+
     if (!exercises || exercises.length === 0) {
-      return res.status(404).json({ message: 'Exercise not found' });
+      return res.status(404).json({ message: 'No exercises found' });
     }
-    res.status(200).json(exercises);
+
+    const randomIndex = Math.floor(Math.random() * exercises.length);
+    const randomExercise = exercises[randomIndex];
+
+    res.status(200).json(randomExercise);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
