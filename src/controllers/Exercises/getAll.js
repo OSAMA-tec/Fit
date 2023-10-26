@@ -132,12 +132,16 @@ const getExerciseById = async (req, res) => {
     if (exercises.length === 0) {
       return res.status(404).json({ message: 'No exercises found' });
     }
+    const randomExercises = [];
+    for(let i=0;i<5;i++){
+      const randomIndex = Math.floor(Math.random() * exercises[1].length);
+      console.log(randomIndex)
+      const randomExercise = exercises[1][randomIndex];
+      randomExercises.push(randomExercise);
 
-    const randomIndex = Math.floor(Math.random() * exercises[1].length);
-    console.log(randomIndex)
-    const randomExercise = exercises[1][randomIndex];
-
-    res.status(200).json(randomExercise);
+      exercises.splice(randomIndex, 1);
+    }
+    res.status(200).json(randomExercises);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
