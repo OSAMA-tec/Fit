@@ -132,6 +132,9 @@ const getExerciseById = async (req, res) => {
     if (exercises.length === 0) {
       return res.status(404).json({ message: 'No exercises found' });
     }
+    if (exercises.length < 5) {
+      return res.status(400).json({ message: 'Not enough exercises' });
+    }
     const randomExercises = [];
     for(let i=0;i<5;i++){
       const randomIndex = Math.floor(Math.random() * exercises[1].length);
