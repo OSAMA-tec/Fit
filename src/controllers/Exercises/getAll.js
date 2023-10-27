@@ -139,7 +139,7 @@ const getExerciseById = async (req, res) => {
     }
     const randomExercises = [];
     for(let i=0;i<5;i++){
-      const randomIndex = Math.floor(Math.random() * exercises[1].length);
+      const randomIndex = Math.floor(Math.random() * exercises[1]?.length);
       console.log(randomIndex)
       const randomExercise = exercises[1][randomIndex];
       randomExercises.push(randomExercise);
