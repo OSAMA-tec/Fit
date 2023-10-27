@@ -66,9 +66,13 @@ const getExercisesByLevel = async (req, res) => {
 };
 
 const getExercisesByBodyPart = async (req, res) => {
+  if (!req.user || !req.body.bodyPart) {
+    return res.status(400).json({ message: 'Bad Request: User or body part missing' });
+  }
   try {
     const userId = req.user.id;
     const bodyPart = req.body.bodyPart;
+
     const exercises = await getExercisesWithPaidStatus(userId, { bodyPart });
     if (!exercises) {
       return res.status(404).json({ message: 'User not found' });
