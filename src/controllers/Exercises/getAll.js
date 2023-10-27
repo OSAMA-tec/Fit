@@ -106,7 +106,7 @@ const getExercises = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    const level = req.params.level;
+    const level = user.fitnessLevel;
     const bodyPart = req.params.bodyPart;
     const dayOfWeek = req.params.dayOfWeek;
 
