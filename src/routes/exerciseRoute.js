@@ -15,18 +15,16 @@ const verifyToken = require('../middleware/auth');
 router.get('/exercise/all',verifyToken, getAllExercises);
 
 //Exercise for user
-router.get('/exercise',verifyToken, getExercises);
-
+router.get('/exercise/:level/:bodyPart/:dayOfWeek', verifyToken, getExercises);
 
 //Exercise by BodyPart
-router.get('/exercise/body',verifyToken, getExercisesByBodyPart);
-
+router.get('/exercise/:bodyPart', verifyToken, getExercisesByBodyPart);
 
 //Exercise by weekDay
-router.get('/exercise/day',verifyToken, getExercisesByDayOfWeek);
+router.get('/exercise/day/:dayOfWeek',verifyToken, getExercisesByDayOfWeek);
 
 //Exercise by level
-router.get('/exercise/level',verifyToken, getExercisesByLevel);
+router.get('/exercise/level/:level',verifyToken, getExercisesByLevel);
 //Exercise by Id
 router.get('/exercise/random',verifyToken, getExerciseById);
 

@@ -51,7 +51,7 @@ const getAllExercises = async (req, res) => {
 const getExercisesByLevel = async (req, res) => {
   try {
     const userId = req.user.id;
-    const level = req.body.level;
+    const level = req.params.level;
     if (!level) {
       return res.status(404).json({ message: "level not passed" });
     }
@@ -64,14 +64,13 @@ const getExercisesByLevel = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 const getExercisesByBodyPart = async (req, res) => {
-  if (!req.user || !req.body.bodyPart) {
+  if (!req.user || !req.params.bodyPart) {
     return res.status(400).json({ message: 'Bad Request: User or body part missing' });
   }
   try {
     const userId = req.user.id;
-    const bodyPart = req.body.bodyPart;
+    const bodyPart = req.params.bodyPart;
 
     const exercises = await getExercisesWithPaidStatus(userId, { bodyPart });
     if (!exercises) {
@@ -83,10 +82,12 @@ const getExercisesByBodyPart = async (req, res) => {
   }
 };
 
+
+
 const getExercisesByDayOfWeek = async (req, res) => {
   try {
     const userId = req.user.id;
-    const dayOfWeek = req.body.dayOfWeek;
+    const dayOfWeek = req.params.dayOfWeek;
     const exercises = await getExercisesWithPaidStatus(userId, { dayOfWeek });
     if (!exercises) {
       return res.status(404).json({ message: 'User not found' });
@@ -105,9 +106,9 @@ const getExercises = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    const level = user.fitnessLevel;
-    const bodyPart = req.body.bodyPart;
-    const dayOfWeek = req.body.dayOfWeek;
+    const level = req.params.level;
+    const bodyPart = req.params.bodyPart;
+    const dayOfWeek = req.params.dayOfWeek;
 
     const exercises = await getExercisesWithPaidStatus(userId, { level, bodyPart, dayOfWeek });
     console.log(exercises)
@@ -120,6 +121,8 @@ const getExercises = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+
 
 const getExerciseById = async (req, res) => {
   try {
