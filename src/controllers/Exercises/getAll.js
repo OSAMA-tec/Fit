@@ -157,11 +157,54 @@ const getExerciseById = async (req, res) => {
 };
 
 
+
+const getExerciseId = async (req, res) => {
+  try {
+    const Id = req.query.id; 
+
+
+    const exercise = await Exercise.findById(Id);
+
+    if (!exercise) {
+      return res.status(404).json({ message: 'Exercise not found' });
+    }
+
+    res.status(200).json(exercise);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+const getPaidExercises = async (req, res) => {
+try {
+  const exercises = await Exercise.find({ paid: true });
+
+  if (!exercises || exercises.length === 0) {
+    return res.status(404).json({ message: 'No paid exercises found' });
+  }
+
+  const shuffledExercises = shuffleArray(exercises);
+
+  res.status(200).json(shuffledExercises.slice(0, 100));
+} catch (error) {
+  res.status(500).json({ message: error.message });
+}
+};
+
 module.exports = {
   getAllExercises,
   getExercisesByLevel,
   getExercisesByBodyPart,
   getExercisesByDayOfWeek,
   getExercises,
-  getExerciseById
+  getExerciseById,
+  getExerciseId,
+  getPaidExercises
 };
