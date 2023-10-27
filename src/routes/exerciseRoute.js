@@ -18,7 +18,7 @@ router.get('/exercise/all',verifyToken, getAllExercises);
 router.get('/exercise/:bodyPart/:dayOfWeek', verifyToken, getExercises);
 
 //Exercise by BodyPart
-router.get('/exercise/:bodyPart', verifyToken, getExercisesByBodyPart);
+router.get('/exercise/body/:bodyPart', verifyToken, getExercisesByBodyPart);
 
 //Exercise by weekDay
 router.get('/exercise/day/:dayOfWeek',verifyToken, getExercisesByDayOfWeek);
