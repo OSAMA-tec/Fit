@@ -132,25 +132,30 @@ const getExerciseById = async (req, res) => {
       return res.status(500).json({ message: 'Exercises is not an object' });
     }
 
-    const exercises = Object.values(exercisesObj);
+    const exercises = Object.values(exercisesObj).flat();
 
     if (exercises.length === 0) {
       return res.status(404).json({ message: 'No exercises found' });
     }
+    
     const randomExercises = [];
     for(let i=0;i<5;i++){
-      const randomIndex = Math.floor(Math.random() * exercises[1]?.length);
-      console.log(randomIndex)
-      const randomExercise = exercises[1][randomIndex];
+      if (exercises.length === 0) {
+        break;
+      }
+      const randomIndex = Math.floor(Math.random() * exercises.length);
+      const randomExercise = exercises[randomIndex];
       randomExercises.push(randomExercise);
 
       exercises.splice(randomIndex, 1);
     }
+    
     res.status(200).json(randomExercises);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 module.exports = {
   getAllExercises,
