@@ -51,7 +51,7 @@ const getAllExercises = async (req, res) => {
 const getExercisesByLevel = async (req, res) => {
   try {
     const userId = req.user.id;
-    const level = req.params.level;
+    const level = req.query.level;
     if (!level) {
       return res.status(404).json({ message: "level not passed" });
     }
@@ -64,13 +64,14 @@ const getExercisesByLevel = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 const getExercisesByBodyPart = async (req, res) => {
-  if (!req.user || !req.params.bodyPart) {
+  if (!req.user || !req.query.bodyPart) {
     return res.status(400).json({ message: 'Bad Request: User or body part missing' });
   }
   try {
     const userId = req.user.id;
-    const bodyPart = req.params.bodyPart;
+    const bodyPart = req.query.bodyPart;
 
     const exercises = await getExercisesWithPaidStatus(userId, { bodyPart });
     if (!exercises) {
@@ -82,12 +83,10 @@ const getExercisesByBodyPart = async (req, res) => {
   }
 };
 
-
-
 const getExercisesByDayOfWeek = async (req, res) => {
   try {
     const userId = req.user.id;
-    const dayOfWeek = req.params.dayOfWeek;
+    const dayOfWeek = req.query.dayOfWeek;
     const exercises = await getExercisesWithPaidStatus(userId, { dayOfWeek });
     if (!exercises) {
       return res.status(404).json({ message: 'User not found' });
@@ -106,12 +105,11 @@ const getExercises = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    const level = user.fitnessLevel;
-    const bodyPart = req.params.bodyPart;
-    const dayOfWeek = req.params.dayOfWeek;
+    const level = req.query.level || user.fitnessLevel;
+    const bodyPart = req.query.bodyPart;
+    const dayOfWeek = req.query.dayOfWeek;
 
     const exercises = await getExercisesWithPaidStatus(userId, { level, bodyPart, dayOfWeek });
-    console.log(exercises)
     if (!exercises || exercises.length === 0) {
       return res.status(404).json({ message: 'No exercises found for the given criteria' });
     }
