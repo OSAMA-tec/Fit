@@ -40,7 +40,7 @@ const updateUserProfile = async (req, res) => {
 const getUserProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user.id)
-      .select('-password -_id')
+      .select('-password')
       .populate('plan'); 
 
     if (!user) {
