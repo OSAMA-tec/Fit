@@ -38,9 +38,9 @@ const getExercisesWithPaidStatus = async (userId, query) => {
 const getAllExercises = async (req, res) => {
   try {
     const userId = req.user.id;
-    const exercises = await getExercisesWithPaidStatus(userId, {});
+    const exercises = await Exercise.find();
     if (!exercises) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: 'Exercise not found' });
     }
     res.status(200).json(exercises);
   } catch (err) {
