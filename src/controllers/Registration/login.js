@@ -5,15 +5,27 @@ const User = require('../../models/User');
 dotenv.config();
 
 const login = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, way } = req.body;
 
-  if (!(email && password)) {
-    return res.status(400).send("All input is required");
+  if (way === 'google') {
+    if (!email) {
+      return res.status(400).send("Email is required");
+    }
+  } else {
+    if (!(email && password)) {
+      return res.status(400).send("Email and password are required");
+    }
   }
 
   const user = await User.findOne({ email });
 
-  if (user && (await bcrypt.compare(password, user.password))) {
+  if (user) {
+    if (way !== 'google') {
+      if (!(await bcrypt.compare(password, user.password))) {
+        return res.status(400).send("Invalid Credentials");
+      }
+    }
+
     const jwtSecret = user.role === 'admin' ? process.env.JWT_SECRET_Admin : process.env.JWT_SECRET;
     const token = jwt.sign(
       { id: user._id, username: user.username, email: user.email, role: user.role },

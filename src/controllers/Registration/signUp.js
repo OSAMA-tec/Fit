@@ -8,15 +8,20 @@ dotenv.config();
 const saltRounds = 10;
 
 const signUp = async (req, res) => {
-  const { username, email, password, role } = req.body;
+  const { username, email, password, role, way } = req.body;
 
   // Check for required fields
-  if (!username || !email || !password) {
-    return res.status(400).json({ error: 'Username, email, and password are required' });
+  if (way === 'google') {
+    if (!username || !email) {
+      return res.status(400).json({ error: 'Username and email are required' });
+    }
+  } else {
+    if (!username || !email || !password) {
+      return res.status(400).json({ error: 'Username, email, and password are required' });
+    }
   }
 
   try {
-    // Check if user already exists
     const existingUserEmail = await User.findOne({ email });
     const existingUserUsername = await User.findOne({ username });
 
@@ -24,20 +29,19 @@ const signUp = async (req, res) => {
       return res.status(400).json({ error: 'A user with this email or username already exists' });
     }
 
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    let hashedPassword = null;
+    if (way !== 'google') {
+      hashedPassword = await bcrypt.hash(password, saltRounds);
+    }
 
-    // Create a new plan
     const plan = new Plan({
       name: 'free',
       subscription: 'one month',
       durationInDays: 30
     });
 
-    // Save the plan
     await plan.save();
 
-    // Create a new user
     const user = new User({
       username,
       email,
@@ -47,10 +51,8 @@ const signUp = async (req, res) => {
       plan: plan._id 
     });
 
-    // Save the user
     await user.save();
 
-    // Generate a JWT
     const jwtSecret = user.role === 'admin' ? process.env.JWT_SECRET_Admin : process.env.JWT_SECRET;
     const token = jwt.sign(
         { id: user._id, username: user.username, email: user.email, role: user.role },
