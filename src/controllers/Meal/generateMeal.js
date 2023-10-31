@@ -140,19 +140,46 @@ const generateAndGetMealPlan = async (req, res) => {
         data: {
           model: 'llama-2-70b-chat',
           messages: [
-            {role: 'system', content: `give meal plan for ${days[i]}`},
-            {role: 'user', content: `i wana ${user.topGoal},my age is ${user.age} my weight is ${user.weight} my height is ${user.height}.I am ${user.gender} my workout level is ${user.fitnessLevel} and my workout routine is ${user.workoutRoutine}`}
+            { role: 'system', content: `give meal plan for ${days[i]}` },
+            { role: 'user', content: `i wana ${user.topGoal},my age is ${user.age} my weight is ${user.weight} my height is ${user.height}.I am ${user.gender} my workout level is ${user.fitnessLevel} and my workout routine is ${user.workoutRoutine}` }
           ],
           max_tokens: 3000
         }
       };
 
       const response = await axios.request(options);
-      const meals = response.data.choices[0].message.content.split('\n\n').map(meal => {
-        const [mealName, ...mealItems] = meal.split('\n');
-        return { mealName, mealItems };
-      });
+      console.log(response)
+      const meals = parseMeals(response.data.choices[0].message.content);
       mealPlan.push({ day: days[i], meals: meals });
+    }
+
+    function parseMeals(content) {
+      const lines = content.split('\n');
+      const meals = [];
+      let meal = {};
+    
+      lines.forEach(line => {
+        if (line.trim() === '') {
+          return;
+        }
+        if (line.endsWith('**')) {
+          if (meal.mealName) {
+            meals.push(meal);
+          }
+          meal = { mealName: line.slice(0, -2), mealItems: [] };
+        } else {
+          if (!meal.mealItems) {
+            meal.mealItems = [];
+          }
+          meal.mealItems.push(line);
+        }
+      });
+    
+      if (meal.mealName) {
+        meals.push(meal);
+      }
+    
+      return meals;
     }
 
     const newMealPlan = new MealPlan({ user: userId, mealPlan: mealPlan });
@@ -170,4 +197,4 @@ const generateAndGetMealPlan = async (req, res) => {
   }
 };
 
-module.exports={generateAndGetMealPlan};
+module.exports = { generateAndGetMealPlan };
