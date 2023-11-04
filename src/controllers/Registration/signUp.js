@@ -1,11 +1,9 @@
 const User = require('../../models/User');
-const Plan = require('../../models/Plan'); 
-const bcrypt = require('bcrypt');
+const Plan = require('../../models/Plan');
+const argon2 = require('argon2');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 dotenv.config();
-
-const saltRounds = 10;
 
 const signUp = async (req, res) => {
   const { username, email, password, role, way } = req.body;
@@ -31,7 +29,7 @@ const signUp = async (req, res) => {
 
     let hashedPassword = null;
     if (way !== 'google') {
-      hashedPassword = await bcrypt.hash(password, saltRounds);
+      hashedPassword = await argon2.hash(password);
     }
 
     const plan = new Plan({

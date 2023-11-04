@@ -11,6 +11,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "2": "^3.0.0",
+    "argon": "^2.0.21",
+    "argon2": "^0.31.1",
     "axios": "^1.5.1",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",

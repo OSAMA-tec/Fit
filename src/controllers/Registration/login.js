@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
+const argon2 = require('argon2');
 const dotenv = require('dotenv');
 const User = require('../../models/User');
 dotenv.config();
@@ -21,7 +21,7 @@ const login = async (req, res) => {
 
   if (user) {
     if (way !== 'google') {
-      if (!(await bcrypt.compare(password, user.password))) {
+      if (!(await argon2.verify(user.password, password))) {
         return res.status(400).send("Invalid Credentials");
       }
     }
@@ -35,10 +35,10 @@ const login = async (req, res) => {
 
     user.token = token;
 
-    res.status(200).json({msg:"Login Successfully!",TOKEN:token,user});
+    res.status(200).json({ msg: "Login Successfully!", TOKEN: token, user });
   } else {
     res.status(400).send("Invalid Credentials");
   }
 };
 
-module.exports={login};
+module.exports = { login };
