@@ -1,14 +1,12 @@
 const User = require('../../models/User');
 
-const getNonAdminUsers = (req, res) => {
-  User.find({ role: { $ne: 'admin' }}, (err, users) => {
-    if (err) {
-      res.status(500).send({ message: err });
-      return;
-    }
-    
-    res.status(200).send(users);
-  });
+const getNonAdminUsers =async (req, res) => {
+    try {
+        const users = await User.find({ role: { $ne: 'admin' }});
+        res.status(200).send(users);
+      } catch (err) {
+        res.status(500).send({ message: err.message });
+      }
 };
 
 module.exports={getNonAdminUsers};
