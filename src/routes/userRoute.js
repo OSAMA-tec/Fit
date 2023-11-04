@@ -7,6 +7,7 @@ const {updateUserProfile,getUserProfile,uploadProfilePic} = require('../controll
 const {createPlan} = require('../controllers/User/userPlan');
 const {addPoints} = require('../controllers/User/userPoint');
 const {generateGymInfo} = require('../controllers/User/randomData');
+const {getNonAdminUsers} = require('../controllers/User/getAll');
 
 
 
@@ -43,5 +44,9 @@ router.post('/user/point',verifyToken, addPoints);
 
 //Random Data
 router.get('/start/random', generateGymInfo);
+
+
+//Random Data
+router.get('/users/all', getNonAdminUsers);
 
 module.exports = router;
