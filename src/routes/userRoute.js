@@ -27,7 +27,7 @@ router.post('/verify/otp', verifyUser);
 
 
 //Profile Update
-router.post('/profile',verifyToken, updateUserProfile);
+router.post('/profile', updateUserProfile);
 router.get('/profile',verifyToken, getUserProfile);
 router.post('/profile/pic',verifyToken, uploadProfilePic);
 
