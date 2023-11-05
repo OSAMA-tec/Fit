@@ -5,9 +5,11 @@ const User = require('../../models/User');
 const createPlanAndUpdateUser = async (req, res) => {
   try {
     const userId = req.body.id;
+    console.log(userId)
     const { planName, subscription } = req.body;
 
     const user = await User.findById(userId);
+    console.log(user)
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }

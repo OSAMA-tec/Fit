@@ -14,7 +14,7 @@ const createPlan = async (req, res) => {
     }
 
     // Check if user exists
-    const user = await User.findById(req.body.id);
+    const user = await User.findById(req.user.id);
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
