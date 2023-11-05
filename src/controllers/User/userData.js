@@ -29,9 +29,11 @@ const updateUserProfile = async (req, res) => {
     }
 
     if(user.weight && user.height) {
-      user.bmi = user.weight / Math.pow(user.height, 2);
+      let bmi = user.weight / Math.pow(user.height, 2);
+      user.bmi = parseFloat(bmi.toFixed(2));
     }
 
+    console.log(user.bmi)
     await user.save();
 
     return res.status(200).json({ message: 'User profile updated successfully', user });
