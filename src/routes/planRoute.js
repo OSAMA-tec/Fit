@@ -15,7 +15,7 @@ const verifyToken = require('../middleware/auth');
 
 
 //User Select Plan
-router.post('/select/plan',verifyToken, createPlanAndUpdateUser);
+router.post('/select/plan', createPlanAndUpdateUser);
 
 
 
