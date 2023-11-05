@@ -26,6 +26,9 @@ const UserSchema = new Schema({
   age: {
     type: Number,
     },
+  bmi: {
+    type: String,
+    },
   DateofBirth: {
     type: Date,
     },
