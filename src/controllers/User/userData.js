@@ -28,12 +28,13 @@ console.log(user)
         user[key] = updates[key];
       }
     }
-
     if(user.weight && user.height) {
-      let bmi = user.weight / Math.pow(user.height, 2);
+      let heightInMeters = user.height / 100;
+      let bmi = user.weight / Math.pow(heightInMeters, 2);
       user.bmi = parseFloat(bmi.toFixed(2));
     }
-
+    
+    
     console.log(user.bmi)
     await user.save();
 
