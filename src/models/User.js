@@ -16,6 +16,12 @@ const UserSchema = new Schema({
   points: {
     type: Number,
     },
+  mealplanid: {
+    type: String,
+    },
+  mealplandate: {
+    type: Date,
+    },
   otp: {
     type: String,
     },
