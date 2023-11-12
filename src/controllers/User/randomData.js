@@ -45,14 +45,12 @@
 
 // module.exports={generateGymInfo}
 
-
 const Quote = require('../../models/randomQuote');
 const Meal = require('../../models/randomMeal');
-const Exercise = require('../../models/Exercise'); 
 
 const generateGymInfo = async (req, res) => {
   try {
-    const options = ['quote', 'meal', 'exercise'];
+    const options = ['quote', 'meal'];
     const selectedOption = options[Math.floor(Math.random() * options.length)];
 
     let gymInfo;
@@ -76,11 +74,6 @@ const generateGymInfo = async (req, res) => {
           await Meal.updateMany({}, { used: false });
         }
         gymInfo = { type: 'meal', content: meal ? meal.meal : 'No meal available' };
-        break;
-
-      case 'exercise':
-        const exercise = await Exercise.aggregate([{ $sample: { size: 1 } }]); 
-        gymInfo = { type: 'exercise', content: exercise.length ? exercise[0].name : 'No exercise available' }; 
         break;
 
       default:
