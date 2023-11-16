@@ -2,6 +2,7 @@
 const Exercise = require('../../models/Exercise');
 const User = require('../../models/User');
 const Plan = require('../../models/Plan');
+
 const getExercisesWithPaidStatus = async (userId, query, page = 1, limit = 30) => {
   const user = await User.findById(userId);
   if (!user) {
@@ -76,9 +77,16 @@ const getExercisesByBodyPart = async (req, res) => {
   if (!req.user || !req.query.bodyPart) {
     return res.status(400).json({ message: 'Bad Request: User or body part missing' });
   }
+
   try {
     const userId = req.user.id;
     const bodyPart = req.query.bodyPart;
+    if(bodyPart==='upper legs'){
+      bodyPart='upper Legs';
+    }
+    if(bodyPart==='lower legs'){
+      bodyPart='lower Legs';
+    }
     const page = parseInt(req.query.page)
 
     const exercises = await getExercisesWithPaidStatus(userId, { bodyPart },page);
