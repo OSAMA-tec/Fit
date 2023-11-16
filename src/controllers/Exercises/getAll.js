@@ -9,7 +9,8 @@ const getExercisesWithPaidStatus = async (userId, query, page = 1, limit = 30) =
   }
 
   if (user.role === 'admin') {
-    const exercises= await Exercise.find(query).skip((page - 1) * limit).limit(limit);
+    let paid = { $in: [true, false] };
+    const exercises= await Exercise.find({...query,paid}).skip((page - 1) * limit).limit(limit);
     return { exercises };
   }
 
