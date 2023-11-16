@@ -9,7 +9,8 @@ const getExercisesWithPaidStatus = async (userId, query, page = 1, limit = 30) =
   }
 
   if (user.role === 'admin') {
-    return await Exercise.find(query).skip((page - 1) * limit).limit(limit);
+    const exercises= await Exercise.find(query).skip((page - 1) * limit).limit(limit);
+    return { exercises };
   }
 
   const hasPlan = user.plan != null;
