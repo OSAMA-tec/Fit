@@ -80,13 +80,13 @@ const getExercisesByBodyPart = async (req, res) => {
 
   try {
     const userId = req.user.id;
-    const bodyPart = req.query.bodyPart;
-    if(bodyPart==='upper legs'){
-      bodyPart='upper Legs';
-    }
-    if(bodyPart==='lower legs'){
-      bodyPart='lower Legs';
-    }
+    let bodyPart = req.query.bodyPart;
+    // if(bodyPart==='upper legs'){
+    //   bodyPart='upper Legs';
+    // }
+    // if(bodyPart==='lower legs'){
+    //   bodyPart='lower Legs';
+    // }
     const page = parseInt(req.query.page)
 
     const exercises = await getExercisesWithPaidStatus(userId, { bodyPart },page);
