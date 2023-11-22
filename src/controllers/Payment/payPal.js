@@ -3,7 +3,8 @@ const Payment = require('../../models/Payment');
 
 const clientId = process.env.PAYPAL_CLIENT_ID;
 const clientSecret = process.env.PAYPAL_CLIENT_SECRET;
-const paypalAPI = 'https://api-m.sandbox.paypal.com';
+// const paypalAPI = 'https://api-m.sandbox.paypal.com';
+const paypalAPI = 'https://api-m.paypal.com';
 
 const basicAuthToken = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
 
