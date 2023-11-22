@@ -87,6 +87,38 @@ const getExercisesByBodyPart = async (req, res) => {
     // if(bodyPart==='lower legs'){
     //   bodyPart='lower Legs';
     // }
+    async function printExerciseCountByNameAndBodyPart() {
+      try {
+        // Perform the aggregation
+        const results = await Exercise.aggregate([
+          {
+            $group: {
+              _id: { name: "$name", bodyPart: "$bodyPart" }, // Group by name and bodyPart
+              count: { $sum: 1 } // Count the documents in each group
+            }
+          },
+          {
+            $match: {
+              "count": { $gt: 1 } // Match only groups where count is greater than 1
+            }
+          }
+        ]);
+    
+        // If results are found, print them
+        if (results && results.length > 0) {
+          results.forEach((result) => {
+            console.log(`Exercise name: ${result._id.name}, Body Part: ${result._id.bodyPart}, Count: ${result.count}`);
+          });
+        } else {
+          console.log('No exercises with the same name and body part were found.');
+        }
+      } catch (err) {
+        console.error('Error fetching exercise count:', err);
+      }
+    }
+    
+    // Call the function to print the count
+    printExerciseCountByNameAndBodyPart();
     const page = parseInt(req.query.page)
 
     const exercises = await getExercisesWithPaidStatus(userId, { bodyPart },page);
@@ -217,6 +249,8 @@ try {
   res.status(500).json({ message: error.message });
 }
 };
+
+
 
 module.exports = {
   getAllExercises,
