@@ -106,68 +106,75 @@ async function executePayment(req, res) {
     }
 }
 
-// async function cancelPayment(req, res) {
-//     const paymentId = req.query.paymentId;
-//     const payment = await Payment.findOne({ paypalPaymentId: paymentId });
-
-//     if (!payment) {
-//         return res.status(404).send('Payment not found');
-//     }
-
-//     try {
-
-//         payment.paymentStatus = 'Canceled';
-//         await payment.save();
-
-//         res.json({
-//             message: 'Payment Cancel',
-//         });
-//     } catch (error) {
-//         console.error('Cancel payment error:', error.message);
-//         res.status(500).send('Internal Server Error');
-//     }
-// }
-
 async function cancelPayment(req, res) {
+    const paymentId = req.query.paymentId;
+    const payment = await Payment.findOne({ paypalPaymentId: paymentId });
 
-    const { token } = req.query;
-  
+    if (!payment) {
+        return res.status(404).send('Payment not found');
+    }
+
     try {
+
+        payment.paymentStatus = 'Canceled';
+        await payment.save();
+
+        res.json({
+            message: 'Payment Cancel',
+        });
+    } catch (error) {
+        console.error('Cancel payment error:', error.message);
+        res.status(500).send('Internal Server Error');
+    }
+}
+
+// async function cancelPayment(req, res) {
+
+//     const { token } = req.query;
+//     console.log(token)
+//     try {
   
-      const accessToken = await getAccessToken();
+//       const accessToken = await getAccessToken();
       
-      const response = await axios.post(
-        `${paypalAPI}/v2/checkout/orders/${token}/cancel`, 
-        {},
-        {
-          headers: {
-            'Authorization': `Bearer ${accessToken}`
-          }
-        }
-      );
+//       const response = await axios.post(
+//         `${paypalAPI}/v2/checkout/orders/${token}/cancel`, 
+//         {},
+//         {
+//           headers: {
+//             'Authorization': `Bearer ${accessToken}`
+//           }
+//         }
+//       );
   
-      if(response.status === 204) {
-        return res.json({
-          message: "Payment cancelled successfully"
-        });
-      }
+//       if(response.status === 204) {
+//         return res.json({
+//           message: "Payment cancelled successfully"
+//         });
+//       }
   
-      } catch (error) {
-        console.error(error);
-        return res.status(500).json({
-          message: "Error cancelling payment"  
-        });
-      }
+//       } catch (error) {
+//         console.error(error);
+//         return res.status(500).json({
+//           message: "Error cancelling payment"  
+//         });
+//       }
   
-  }
+//   }
+
+
 async function getAccessToken() {
-    return axios.post(`${paypalAPI}/v1/oauth2/token`, 'grant_type=client_credentials', {
+    const response=await axios.post(`${paypalAPI}/v1/oauth2/token`, 'grant_type=client_credentials', {
         headers: {
             'Authorization': `Basic ${basicAuthToken}`,
             'Content-Type': 'application/x-www-form-urlencoded'
         }
     });
+    const jsonData = response.json();
+    return jsonData.access_token;
 }
+
+
+
 
 module.exports = {
     createPayment,
