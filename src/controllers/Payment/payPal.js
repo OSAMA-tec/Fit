@@ -47,6 +47,7 @@ async function createPayment(req, res) {
                 'Content-Type': 'application/json'
             }
         });
+        await Payment.deleteMany({ userId });
 
         const payment = new Payment({
             userId,
