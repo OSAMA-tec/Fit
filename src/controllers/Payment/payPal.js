@@ -35,7 +35,7 @@ async function createPayment(req, res) {
                 payee_preferred: 'IMMEDIATE_PAYMENT_REQUIRED'
             },
             application_context: {
-                brand_name: `Your Brand Name`,
+                brand_name: `Fitness APp`,
                 landing_page: 'BILLING',
                 user_action: 'PAY_NOW',
                 return_url: 'https://fitnessapp-666y.onrender.com/api/payment/success',
@@ -106,28 +106,60 @@ async function executePayment(req, res) {
     }
 }
 
+// async function cancelPayment(req, res) {
+//     const paymentId = req.query.paymentId;
+//     const payment = await Payment.findOne({ paypalPaymentId: paymentId });
+
+//     if (!payment) {
+//         return res.status(404).send('Payment not found');
+//     }
+
+//     try {
+
+//         payment.paymentStatus = 'Canceled';
+//         await payment.save();
+
+//         res.json({
+//             message: 'Payment Cancel',
+//         });
+//     } catch (error) {
+//         console.error('Cancel payment error:', error.message);
+//         res.status(500).send('Internal Server Error');
+//     }
+// }
+
 async function cancelPayment(req, res) {
-    const paymentId = req.query.paymentId;
-    const payment = await Payment.findOne({ paypalPaymentId: paymentId });
 
-    if (!payment) {
-        return res.status(404).send('Payment not found');
-    }
-
+    const { token } = req.query;
+  
     try {
-
-        payment.paymentStatus = 'Canceled';
-        await payment.save();
-
-        res.json({
-            message: 'Payment Cancel',
+  
+      const accessToken = await getAccessToken();
+      
+      const response = await axios.post(
+        `${paypalAPI}/v2/checkout/orders/${token}/cancel`, 
+        {},
+        {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`
+          }
+        }
+      );
+  
+      if(response.status === 204) {
+        return res.json({
+          message: "Payment cancelled successfully"
         });
-    } catch (error) {
-        console.error('Cancel payment error:', error.message);
-        res.status(500).send('Internal Server Error');
-    }
-}
-
+      }
+  
+      } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+          message: "Error cancelling payment"  
+        });
+      }
+  
+  }
 async function getAccessToken() {
     return axios.post(`${paypalAPI}/v1/oauth2/token`, 'grant_type=client_credentials', {
         headers: {
