@@ -9,7 +9,7 @@ const paypalAPI = 'https://api-m.paypal.com';
 const basicAuthToken = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
 
 async function createPayment(req, res) {
-    const { amount, packageId } = req.body;
+    const { amount, packageName } = req.body;
     const userId = req.user.id;
 
     try {
@@ -51,7 +51,7 @@ async function createPayment(req, res) {
         const payment = new Payment({
             userId,
             amount,
-            packageId,
+            packageName,
             paypalPaymentId: paymentResponse.data.id
         });
 

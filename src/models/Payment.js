@@ -10,7 +10,7 @@ const PaymentSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
-  packageId: {
+  packageName: {
     type: String,
     required: true
   },
