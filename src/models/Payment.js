@@ -12,7 +12,6 @@ const PaymentSchema = new mongoose.Schema({
   },
   packageName: {
     type: String,
-    required: true
   },
   paymentStatus: {
     type: String,
