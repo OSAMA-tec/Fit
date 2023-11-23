@@ -8,7 +8,7 @@ router.post('/payment/create',verifyToken,createPayment);
 
 router.get('/payment/success',verifyToken, executePayment);
 
-router.get('/payment/cancel',verifyToken, cancelPayment);
+router.post('/payment/cancel',verifyToken, cancelPayment);
 
 
 
