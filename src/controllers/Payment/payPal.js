@@ -87,7 +87,6 @@ async function createPayment(req, res) {
 
 
 async function executePayment(req, res) {
-
     const paymentId = req.query.paymentId;
     const payerId = req.query.PayerID;
     if(!paymentId || !payerId) {
@@ -95,7 +94,6 @@ async function executePayment(req, res) {
     }
   
     try {
-  
       const payment = await Payment.findOne({ paypalPaymentId: paymentId });
   
       if(!payment) {
@@ -105,7 +103,7 @@ async function executePayment(req, res) {
       // Handle expired access token
       let accessToken = await getAccessToken();
   
-      const captureResponse = await axios.post(`${paypalAPI}/v2/checkout/orders/${paymentId}/capture`, {}, {
+      let captureResponse = await axios.post(`${paypalAPI}/v2/checkout/orders/${paymentId}/capture`, {}, {
         headers: { 
           'Authorization': `Bearer ${accessToken}`
         }
@@ -134,12 +132,9 @@ async function executePayment(req, res) {
       console.error('Execute payment error:', error);
       res.status(500).send('Internal Server Error');
     }
-  
-  }
+}
 
-// Cancel payment
 async function cancelPayment(req, res) {
-
     const paymentId = req.query.paymentId;
   
     const payment = await Payment.findOne({ paypalPaymentId: paymentId });
@@ -149,17 +144,25 @@ async function cancelPayment(req, res) {
     }
   
     try {
-  
       // Get access token
-      const tokenResponse = await getAccessToken();
-      const accessToken = tokenResponse.data.access_token;
+      let accessToken = await getAccessToken();
   
       // Cancel payment on PayPal
-      const response = await axios.post(`${paypalAPI}/v2/checkout/orders/${paymentId}/cancel`, {}, {
+      let response = await axios.post(`${paypalAPI}/v2/checkout/orders/${paymentId}/cancel`, {}, {
         headers: {
           'Authorization': `Bearer ${accessToken}`
         }
       });
+  
+      // If token expired, get new one
+      if(response.status === 401) {
+        accessToken = await getAccessToken();
+        response = await axios.post(`${paypalAPI}/v2/checkout/orders/${paymentId}/cancel`, {}, {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`
+          }
+        });
+      }
   
       if(response.status === 204) {
         // Update payment status
@@ -175,8 +178,8 @@ async function cancelPayment(req, res) {
       console.error('Cancel payment error:', error);
       return res.status(500).send('Error cancelling payment');
     }
-  
-  }
+}
+
 // async function cancelPayment(req, res) {
 
 //     const { token } = req.query;
