@@ -257,7 +257,7 @@ const createPayment = async (req, res) => {
   });
 
   try {
-    const order = await environment().execute(request);
+    const order = await client().execute(request);
     res.json({ orderID: order.result.id });
   } catch (err) {
     console.error(err);
@@ -272,7 +272,7 @@ const executePayment = async (req, res) => {
   request.requestBody({});
 
   try {
-    const capture = await environment().execute(request);
+    const capture = await client().execute(request);
     res.json({ captureID: capture.result.id });
   } catch (err) {
     console.error(err);
