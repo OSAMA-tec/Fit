@@ -221,70 +221,371 @@
 
 
 
-const express = require('express');
-const checkoutNodeJssdk = require('@paypal/checkout-server-sdk');
 
-function environment() {
-  let clientId = process.env.PAYPAL_ID || 'YOUR_CLIENT_ID';
-  let clientSecret = process.env.PAYPAL_SECRET || 'YOUR_CLIENT_SECRET';
+//new
+// const checkoutNodeJssdk = require('@paypal/checkout-server-sdk');
+// // let accessTokenCache = {
+// //   value: null,
+// //   expiration: null,
+// // };
 
-  return new checkoutNodeJssdk.core.SandboxEnvironment(clientId, clientSecret);
-}
+// function environment() {
+//   let clientId = process.env.PAYPAL_ID || 'YOUR_CLIENT_ID';
+//   let clientSecret = process.env.PAYPAL_SECRET || 'YOUR_CLIENT_SECRET';
 
-function client() {
-  return new checkoutNodeJssdk.core.PayPalHttpClient(environment());
-}
+//   console.log('Client ID:', clientId); // Log client ID
+//   console.log('Client Secret:', clientSecret); // Log client secret
 
+//   return new checkoutNodeJssdk.core.SandboxEnvironment(clientId, clientSecret);
+// }
 
-const createPayment = async (req, res) => {
-  const request = new checkoutNodeJssdk.orders.OrdersCreateRequest();
-  request.prefer("return=representation");
-  request.requestBody({
-    intent: 'CAPTURE',
-    purchase_units: [{
-      amount: {
-        currency_code: 'USD',
-        value: req.body.amount.toString()
-      }
-    }],
-    application_context: {
-      brand_name: `Fitness APP`,
-      landing_page: 'BILLING',
-      user_action: 'PAY_NOW',
-      return_url: 'https://fitnessapp-666y.onrender.com/api/payment/success',
-      cancel_url: 'https://fitnessapp-666y.onrender.com/api/payment/cancel'
-    }
-  });
+// async function getAccessToken() {
+//   const now = new Date();
 
-  try {
-    const order = await client().execute(request);
-    res.json({ orderID: order.result.id });
-  } catch (err) {
-    console.error(err);
-    res.sendStatus(500);
-  }
-};
+//   if (accessTokenCache.value && now < accessTokenCache.expiration) {
+//     console.log('Using cached access token:', accessTokenCache.value); // Log cached access token
+//     return { data: { access_token: accessTokenCache.value } };
+//   }
 
-const executePayment = async (req, res) => {
-  const orderId = req.query.token;
+//   try {
+//     const response = await new checkoutNodeJssdk.core.PayPalHttpClient(environment()).fetchAccessToken();
+//     console.log('Access token response:', response); // Log access token response
 
-  const request = new checkoutNodeJssdk.orders.OrdersCaptureRequest(orderId);
-  request.requestBody({});
+//     accessTokenCache.value = response._accessToken;
+//     accessTokenCache.expiration = new Date(now.getTime() + response._expiresIn * 1000);
 
-  try {
-    const capture = await client().execute(request);
-    res.json({ captureID: capture.result.id });
-  } catch (err) {
-    console.error(err);
-    res.sendStatus(500);
-  }
-};
+//     console.log('New access token:', accessTokenCache.value); // Log new access token
+
+//     return { data: { access_token: accessTokenCache.value } };
+//   } catch (error) {
+//     console.error('Error fetching access token:', error);
+//     throw error; 
+//   }
+// }
+
+// function client() {
+//   const paypalClient = new checkoutNodeJssdk.core.PayPalHttpClient(environment());
+
+//   paypalClient.fetchAccessToken = async () => {
+//     const accessToken = await getAccessToken();
+//     console.log('Access token for client:', accessToken.data.access_token); // Log access token for client
+//     return `Basic ${accessToken.data.access_token}`;
+//   };
+
+//   return paypalClient;
+// }
+
+// const createPayment = async (req, res) => {
+//   const request = new checkoutNodeJssdk.orders.OrdersCreateRequest();
+//   request.prefer("return=representation");
+//   request.requestBody({
+//     intent: 'CAPTURE',
+//     purchase_units: [{
+//       amount: {
+//         currency_code: 'USD',
+//         value: req.body.amount.toString()
+//       }
+//     }],
+//     application_context: {
+//       brand_name: `Fitness APP`,
+//       landing_page: 'BILLING',
+//       user_action: 'PAY_NOW',
+//       return_url: 'https://fitnessapp-666y.onrender.com/api/payment/success',
+//       cancel_url: 'https://fitnessapp-666y.onrender.com/api/payment/cancel'
+//     }
+//   });
+
+//   try {
+//     const order = await client().execute(request);
+//     console.log('Order:', order); // Log order
+
+//     const approvalLink = order.result.links.find(link => link.rel === 'approve').href;
+//     res.json({ orderID: order.result.id, approvalUrl: approvalLink });   
+//   } catch (err) {
+//     console.error('Error creating payment:', err); // Log error
+//     res.sendStatus(500);
+//   }
+// };
+
+// const executePayment = async (req, res) => {
+//   const orderId = req.query.token;
+
+//   const request = new checkoutNodeJssdk.orders.OrdersCaptureRequest(orderId);
+//   request.requestBody({});
+
+//   try {
+//     const capture = await client().execute(request);
+//     console.log('Capture:', capture); // Log capture
+
+//     res.json({ captureID: capture.result.id });
+//   } catch (err) {
+//     console.error('Error executing payment:', err); // Log error
+//     res.sendStatus(500);
+//   }
+// };
+
 const cancelPayment = (req, res) => {
+  console.log('Payment cancelled by user'); // Log cancellation
   res.json({ message: 'Order cancelled by the user' });
 };
 
+///new
 
 
+
+
+
+
+////////////////////////////////////
+// const axios = require('axios');
+
+// const { PAYPAL_ID, PAYPAL_SECRET } = process.env;
+// const base = "https://api-m.sandbox.paypal.com";
+// let accessTokenCache = {
+//   value: null,
+//   expiration: null,
+// };
+
+// const generateAccessToken = async () => {
+//   const now = new Date();
+//   if (accessTokenCache.value && now < accessTokenCache.expiration) {
+//     return accessTokenCache.value;
+//   }
+
+//   try {
+//     if (!PAYPAL_ID || !PAYPAL_SECRET) {
+//       throw new Error("MISSING_API_CREDENTIALS");
+//     }
+//     const auth = Buffer.from(`${PAYPAL_ID}:${PAYPAL_SECRET}`).toString("base64");
+//     const response = await axios.post(`${base}/v1/oauth2/token`, "grant_type=client_credentials", {
+//       headers: {
+//         Authorization: `Basic ${auth}`,
+//         "Content-Type": "application/x-www-form-urlencoded",
+//       },
+//     });
+
+//     const data = response.data;
+//     accessTokenCache.value = data.access_token;
+//     accessTokenCache.expiration = new Date(now.getTime() + data.expires_in * 1000);
+//     return data.access_token;
+//   } catch (error) {
+//     console.error("Failed to generate Access Token:", error);
+//     throw error; 
+//   }
+// };
+
+// // Controllers
+// const createPayment = async (req, res) => {
+//   try {
+//     const accessToken = await generateAccessToken();
+//     const url = `${base}/v2/checkout/orders`;
+//     const payload = {
+//       intent: "CAPTURE",
+//       purchase_units: [
+//         {
+//           amount: {
+//             currency_code: "USD",
+//             value: req.body.amount, 
+//           },
+//         },
+//       ],
+//       application_context: {
+//               brand_name: `Fitness APP`,
+//               landing_page: 'BILLING',
+//               user_action: 'PAY_NOW',
+//               return_url: 'https://fitnessapp-666y.onrender.com/api/payment/success',
+//               cancel_url: 'https://fitnessapp-666y.onrender.com/api/payment/cancel'
+//             }
+//     };
+
+//     const response = await axios.post(url, payload, {
+//       headers: {
+//         Authorization: `Bearer ${accessToken}`,
+//         "Content-Type": "application/json",
+//       },
+//     });
+
+//     const orderData = response.data;
+//     const approvalUrl = orderData.links.find(link => link.rel === "approve").href;
+//     res.json({ id: orderData.id, approvalUrl });
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// };
+// const executePayment = async (req, res) => {
+//   const orderId = req.query.token;
+
+//   const request = new checkoutNodeJssdk.orders.OrdersCaptureRequest(orderId);
+//   request.requestBody({});
+
+//   try {
+//     const capture = await client().execute(request);
+//     console.log('Capture:', capture); // Log capture
+
+//     res.json({ captureID: capture.result.id });
+//   } catch (err) {
+//     console.error('Error executing payment:', err); // Log error
+//     res.sendStatus(500);
+//   }
+// };
+
+// const cancelPayment = (req, res) => {
+//   console.log('Payment cancelled by user'); // Log cancellation
+//   res.json({ message: 'Order cancelled by the user' });
+// };
+////////////////////////////////////
+
+
+
+
+const Payment = require('../../models/Payment');
+
+const axios = require("axios");
+
+const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, } = process.env;
+// const base = "https://api-m.sandbox.paypal.com";
+ const base = 'https://api-m.paypal.com';
+
+const generateAccessToken = async () => {
+  try {
+    if (!PAYPAL_CLIENT_ID || !PAYPAL_CLIENT_SECRET) {
+      throw new Error("MISSING_API_CREDENTIALS");
+    }
+    const auth = Buffer.from(`${PAYPAL_CLIENT_ID}:${PAYPAL_CLIENT_SECRET}`).toString("base64");
+    const response = await axios.post(`${base}/v1/oauth2/token`, "grant_type=client_credentials", {
+      headers: {
+        Authorization: `Basic ${auth}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    });
+
+    const data = response.data;
+    return data.access_token;
+  } catch (error) {
+    console.error("Failed to generate Access Token:", error);
+  }
+};
+
+const createPayment = async (req, res) => {
+  try {
+    const userId=req.user.id;
+    const amount=req.body.amount;
+    const accessToken = await generateAccessToken();
+    const url = `${base}/v2/checkout/orders`;
+    const payload = {
+      intent: "CAPTURE",
+      purchase_units: [
+        {
+          amount: {
+            currency_code: "USD",
+            value: req.body.amount,
+          },
+        },
+      ],
+      application_context: {
+        brand_name: `Fitness APP`,
+        landing_page: 'BILLING',
+        user_action: 'PAY_NOW',
+        return_url: 'https://fitnessapp-666y.onrender.com/api/payment/SuccessDonePayment',
+        cancel_url: 'https://fitnessapp-666y.onrender.com/api/payment/CancelPayment'
+      }
+    };
+
+    const response = await axios.post(url, payload, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+    });
+    const orderData = response.data;
+    const orderId = orderData.id;
+    const approvalUrl = orderData.links.find(link => link.rel === "approve").href;
+    res.status(response.status).json({ id: orderData.id, approvalUrl });
+   
+    setTimeout(() => {
+      const intervalId = setInterval(() => {
+        executePayment(req, orderId, intervalId, userId, amount);
+      }, 3000);
+
+      setTimeout(() => {
+        clearInterval(intervalId);
+
+        const intervalId2 = setInterval(() => {
+          executePayment(req, orderId, intervalId2);
+        }, 10000);
+
+        setTimeout(() => {
+          clearInterval(intervalId2);
+
+          // Move the setTimeout function that updates the payment status here
+          setTimeout(async () => {
+            const existingPayment = await Payment.findOne({ userId: userId, paypalPaymentId: orderId });
+            if (existingPayment && existingPayment.paymentStatus !== 'Success') {
+              existingPayment.paymentStatus = 'Failed';
+              await existingPayment.save();
+            }
+          }, 2 * 60 * 1000);
+        }, 5 * 60 * 1000);
+      }, 2 * 60 * 1000);
+    }, 0);
+  } catch (error) {
+    console.error("Failed to create order:", error);
+    res.status(500).json({ error: "Failed to create order." });
+  }
+};
+
+const executePayment = async (req, orderId, intervalId, userId, amount) => {
+  let captureData;
+  try {
+    const accessToken = await generateAccessToken();
+    const url = `${base}/v2/checkout/orders/${orderId}/capture`;
+
+    const response = await axios.post(url, {}, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    captureData = response.data;
+
+    // Delete all transactions for the user
+    await Payment.deleteMany({ userId: userId });
+
+    const payment = new Payment({
+      userId: userId,
+      amount: amount,
+      paypalPaymentId: orderId,
+      paymentStatus: 'Success',
+      details: JSON.stringify(captureData)
+    });
+    await payment.save();
+
+    clearInterval(intervalId);
+  } catch (error) {
+    console.error("Failed to capture order:", error);
+
+    // Delete all transactions for the user
+    await Payment.deleteMany({ userId: userId });
+
+    const payment = new Payment({
+      userId: userId,
+      amount: amount,
+      paypalPaymentId: orderId,
+      paymentStatus: 'Failed',
+      details: captureData ? JSON.stringify(captureData) : 'Capture data not available'
+    });
+    await payment.save();
+    clearInterval(intervalId);
+  }
+};
+// app.post("/api/orders", createOrder);
+
+// app.post("/api/orders/:orderID/capture", captureOrder);
+
+// app.listen(PORT, () => {
+//   console.log(`Node server listening at http://localhost:${PORT}/`);
+// });
 module.exports = {
   createPayment,
   executePayment,
