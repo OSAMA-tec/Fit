@@ -570,7 +570,7 @@ const executePayment = async (req, orderId, intervalId, intervalId2, userId, amo
       userId: userId,
       amount: amount,
       paypalPaymentId: orderId,
-      paymentStatus: 'Failed',
+      paymentStatus: 'Pending',
       details: captureData ? JSON.stringify(captureData) : 'Capture data not available'
     });
     await payment.save();
