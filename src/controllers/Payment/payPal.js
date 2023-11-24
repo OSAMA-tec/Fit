@@ -437,9 +437,7 @@ const cancelPayment = (req, res) => {
 
 
 
-
 const Payment = require('../../models/Payment');
-
 const axios = require("axios");
 
 const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, } = process.env;
@@ -468,8 +466,8 @@ const generateAccessToken = async () => {
 
 const createPayment = async (req, res) => {
   try {
-    const userId=req.user.id;
-    const amount=req.body.amount;
+    const userId = req.user.id;
+    const amount = req.body.amount;
     const accessToken = await generateAccessToken();
     const url = `${base}/v2/checkout/orders`;
     const payload = {
@@ -501,26 +499,27 @@ const createPayment = async (req, res) => {
     const orderId = orderData.id;
     const approvalUrl = orderData.links.find(link => link.rel === "approve").href;
     res.status(response.status).json({ id: orderData.id, approvalUrl });
-   
+
+    let intervalId, intervalId2;
+
     setTimeout(() => {
-      const intervalId = setInterval(() => {
-        executePayment(req, orderId, intervalId, userId, amount);
+      intervalId = setInterval(() => {
+        executePayment(req, orderId, intervalId, intervalId2, userId, amount);
       }, 3000);
 
       setTimeout(() => {
         clearInterval(intervalId);
 
-        const intervalId2 = setInterval(() => {
-          executePayment(req, orderId, intervalId2);
-        }, 10000);
+        intervalId2 = setInterval(() => {
+          executePayment(req, orderId, intervalId, intervalId2, userId, amount);
+        }, 1000);
 
         setTimeout(() => {
           clearInterval(intervalId2);
 
-          // Move the setTimeout function that updates the payment status here
           setTimeout(async () => {
             const existingPayment = await Payment.findOne({ userId: userId, paypalPaymentId: orderId });
-            if (existingPayment && existingPayment.paymentStatus !== 'Success') {
+            if (existingPayment && existingPayment.paymentStatus == 'Pending') {
               existingPayment.paymentStatus = 'Failed';
               await existingPayment.save();
             }
@@ -534,7 +533,7 @@ const createPayment = async (req, res) => {
   }
 };
 
-const executePayment = async (req, orderId, intervalId, userId, amount) => {
+const executePayment = async (req, orderId, intervalId, intervalId2, userId, amount) => {
   let captureData;
   try {
     const accessToken = await generateAccessToken();
@@ -549,7 +548,6 @@ const executePayment = async (req, orderId, intervalId, userId, amount) => {
 
     captureData = response.data;
 
-    // Delete all transactions for the user
     await Payment.deleteMany({ userId: userId });
 
     const payment = new Payment({
@@ -562,10 +560,10 @@ const executePayment = async (req, orderId, intervalId, userId, amount) => {
     await payment.save();
 
     clearInterval(intervalId);
+    clearInterval(intervalId2);
   } catch (error) {
     console.error("Failed to capture order:", error);
 
-    // Delete all transactions for the user
     await Payment.deleteMany({ userId: userId });
 
     const payment = new Payment({
@@ -577,15 +575,10 @@ const executePayment = async (req, orderId, intervalId, userId, amount) => {
     });
     await payment.save();
     clearInterval(intervalId);
+    clearInterval(intervalId2);
   }
 };
-// app.post("/api/orders", createOrder);
 
-// app.post("/api/orders/:orderID/capture", captureOrder);
-
-// app.listen(PORT, () => {
-//   console.log(`Node server listening at http://localhost:${PORT}/`);
-// });
 module.exports = {
   createPayment,
   executePayment,
