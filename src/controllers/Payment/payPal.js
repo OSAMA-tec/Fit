@@ -434,13 +434,11 @@ const cancelPayment = (req, res) => {
 //   res.json({ message: 'Order cancelled by the user' });
 // };
 ////////////////////////////////////
-
 const Payment = require('../../models/Payment');
 const axios = require("axios");
 
 const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET } = process.env;
-// const base = "https://api-m.sandbox.paypal.com";
- const base = 'https://api-m.paypal.com';
+const base = 'https://api-m.paypal.com';
 
 const generateAccessToken = async () => {
   try {
@@ -511,22 +509,22 @@ const createPayment = async (req, res) => {
     await pendingPayment.save();
 
     let intervalId, intervalId2;
-    let allIntervalsCompleted = false;
+    let intervalStatus = { allIntervalsCompleted: false }; // Use an object to store the flag
 
     const onAllIntervalsCompleted = () => {
-      allIntervalsCompleted = true;
+      intervalStatus.allIntervalsCompleted = true;
     };
 
     setTimeout(() => {
       intervalId = setInterval(() => {
-        executePayment(req, orderId, intervalId, intervalId2, userId, amount, allIntervalsCompleted, onAllIntervalsCompleted);
+        executePayment(req, orderId, intervalId, intervalId2, userId, amount, intervalStatus, onAllIntervalsCompleted);
       }, 5000);
 
       setTimeout(() => {
         clearInterval(intervalId);
 
         intervalId2 = setInterval(() => {
-          executePayment(req, orderId, intervalId, intervalId2, userId, amount, allIntervalsCompleted, onAllIntervalsCompleted);
+          executePayment(req, orderId, intervalId, intervalId2, userId, amount, intervalStatus, onAllIntervalsCompleted);
         }, 5000);
 
         setTimeout(() => {
@@ -541,7 +539,7 @@ const createPayment = async (req, res) => {
   }
 };
 
-const executePayment = async (req, orderId, intervalId, intervalId2, userId, amount, allIntervalsCompleted, onAllIntervalsCompleted) => {
+const executePayment = async (req, orderId, intervalId, intervalId2, userId, amount, intervalStatus, onAllIntervalsCompleted) => {
   let captureData;
   try {
     const accessToken = await generateAccessToken();
@@ -569,7 +567,7 @@ const executePayment = async (req, orderId, intervalId, intervalId2, userId, amo
   } catch (error) {
     console.error("Failed to capture order:", error);
   } finally {
-    if (allIntervalsCompleted) {
+    if (intervalStatus.allIntervalsCompleted) { // Check the flag from the intervalStatus object
       const existingPayment = await Payment.findOne({ paypalPaymentId: orderId });
       if (existingPayment && existingPayment.paymentStatus !== 'Success') {
         existingPayment.paymentStatus = 'Failed';
