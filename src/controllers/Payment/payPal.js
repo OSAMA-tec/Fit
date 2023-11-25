@@ -434,6 +434,7 @@ const cancelPayment = (req, res) => {
 //   res.json({ message: 'Order cancelled by the user' });
 // };
 ////////////////////////////////////
+
 const Payment = require('../../models/Payment');
 const axios = require("axios");
 
@@ -512,21 +513,25 @@ const createPayment = async (req, res) => {
     let intervalId, intervalId2;
     let allIntervalsCompleted = false;
 
+    const onAllIntervalsCompleted = () => {
+      allIntervalsCompleted = true;
+    };
+
     setTimeout(() => {
       intervalId = setInterval(() => {
-        executePayment(req, orderId, intervalId, intervalId2, userId, amount,allIntervalsCompleted);
+        executePayment(req, orderId, intervalId, intervalId2, userId, amount, allIntervalsCompleted, onAllIntervalsCompleted);
       }, 5000);
 
       setTimeout(() => {
         clearInterval(intervalId);
 
         intervalId2 = setInterval(() => {
-          executePayment(req, orderId, intervalId, intervalId2, userId, amount,allIntervalsCompleted);
+          executePayment(req, orderId, intervalId, intervalId2, userId, amount, allIntervalsCompleted, onAllIntervalsCompleted);
         }, 5000);
 
         setTimeout(() => {
           clearInterval(intervalId2);
-          allIntervalsCompleted = true;
+          onAllIntervalsCompleted();
         }, 2 * 60 * 1000);
       }, 0);
     }, 0);
@@ -536,7 +541,7 @@ const createPayment = async (req, res) => {
   }
 };
 
-const executePayment = async (req, orderId, intervalId, intervalId2, userId, amount,allIntervalsCompleted) => {
+const executePayment = async (req, orderId, intervalId, intervalId2, userId, amount, allIntervalsCompleted, onAllIntervalsCompleted) => {
   let captureData;
   try {
     const accessToken = await generateAccessToken();
@@ -560,9 +565,10 @@ const executePayment = async (req, orderId, intervalId, intervalId2, userId, amo
 
     clearInterval(intervalId);
     clearInterval(intervalId2);
+    onAllIntervalsCompleted();
   } catch (error) {
     console.error("Failed to capture order:", error);
-
+  } finally {
     if (allIntervalsCompleted) {
       const existingPayment = await Payment.findOne({ paypalPaymentId: orderId });
       if (existingPayment && existingPayment.paymentStatus !== 'Success') {
