@@ -434,13 +434,10 @@ const cancelPayment = (req, res) => {
 //   res.json({ message: 'Order cancelled by the user' });
 // };
 ////////////////////////////////////
-
-
-
 const Payment = require('../../models/Payment');
 const axios = require("axios");
 
-const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, } = process.env;
+const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET } = process.env;
 // const base = "https://api-m.sandbox.paypal.com";
  const base = 'https://api-m.paypal.com';
 
@@ -484,8 +481,8 @@ const createPayment = async (req, res) => {
         brand_name: `Fitness APP`,
         landing_page: 'BILLING',
         user_action: 'PAY_NOW',
-        return_url: 'https://fitnessapp-666y.onrender.com/api/payment/SuccessDonePayment',
-        cancel_url: 'https://fitnessapp-666y.onrender.com/api/payment/CancelPayment'
+        return_url: 'https://fitnessapp-666y.onrender.com/api/payment/PaymentSuccessfullyCompleted',
+        cancel_url: 'https://fitnessapp-666y.onrender.com/api/payment/PaymentSuccessfullyCanceled'
       }
     };
 
@@ -500,32 +497,38 @@ const createPayment = async (req, res) => {
     const approvalUrl = orderData.links.find(link => link.rel === "approve").href;
     res.status(response.status).json({ id: orderData.id, approvalUrl });
 
+    // Delete all transactions for the user
+    await Payment.deleteMany({ userId: userId });
+
+    // Create a new payment with the status 'Pending'
+    const pendingPayment = new Payment({
+      userId: userId,
+      amount: amount,
+      paypalPaymentId: orderId,
+      paymentStatus: 'Pending',
+    });
+    await pendingPayment.save();
+
     let intervalId, intervalId2;
+    let allIntervalsCompleted = false;
 
     setTimeout(() => {
       intervalId = setInterval(() => {
-        executePayment(req, orderId, intervalId, intervalId2, userId, amount);
-      }, 3000);
+        executePayment(req, orderId, intervalId, intervalId2, userId, amount,allIntervalsCompleted);
+      }, 5000);
 
       setTimeout(() => {
         clearInterval(intervalId);
 
         intervalId2 = setInterval(() => {
-          executePayment(req, orderId, intervalId, intervalId2, userId, amount);
-        }, 1000);
+          executePayment(req, orderId, intervalId, intervalId2, userId, amount,allIntervalsCompleted);
+        }, 5000);
 
         setTimeout(() => {
           clearInterval(intervalId2);
-
-          setTimeout(async () => {
-            const existingPayment = await Payment.findOne({ userId: userId, paypalPaymentId: orderId });
-            if (existingPayment && existingPayment.paymentStatus == 'Pending') {
-              existingPayment.paymentStatus = 'Failed';
-              await existingPayment.save();
-            }
-          }, 2 * 60 * 1000);
-        }, 5 * 60 * 1000);
-      }, 2 * 60 * 1000);
+          allIntervalsCompleted = true;
+        }, 2 * 60 * 1000);
+      }, 0);
     }, 0);
   } catch (error) {
     console.error("Failed to create order:", error);
@@ -533,7 +536,7 @@ const createPayment = async (req, res) => {
   }
 };
 
-const executePayment = async (req, orderId, intervalId, intervalId2, userId, amount) => {
+const executePayment = async (req, orderId, intervalId, intervalId2, userId, amount,allIntervalsCompleted) => {
   let captureData;
   try {
     const accessToken = await generateAccessToken();
@@ -548,32 +551,27 @@ const executePayment = async (req, orderId, intervalId, intervalId2, userId, amo
 
     captureData = response.data;
 
-    await Payment.deleteMany({ userId: userId });
-
-    const payment = new Payment({
-      userId: userId,
-      amount: amount,
-      paypalPaymentId: orderId,
-      paymentStatus: 'Success',
-      details: JSON.stringify(captureData)
-    });
-    await payment.save();
+    const existingPayment = await Payment.findOne({ paypalPaymentId: orderId });
+    if (existingPayment && existingPayment.paymentStatus === 'Pending') {
+      existingPayment.paymentStatus = 'Success';
+      existingPayment.details = JSON.stringify(captureData);
+      await existingPayment.save();
+    }
 
     clearInterval(intervalId);
     clearInterval(intervalId2);
   } catch (error) {
     console.error("Failed to capture order:", error);
 
-    await Payment.deleteMany({ userId: userId });
+    if (allIntervalsCompleted) {
+      const existingPayment = await Payment.findOne({ paypalPaymentId: orderId });
+      if (existingPayment && existingPayment.paymentStatus !== 'Success') {
+        existingPayment.paymentStatus = 'Failed';
+        existingPayment.details = captureData ? JSON.stringify(captureData) : 'Capture data not available';
+        await existingPayment.save();
+      }
+    }
 
-    const payment = new Payment({
-      userId: userId,
-      amount: amount,
-      paypalPaymentId: orderId,
-      paymentStatus: 'Pending',
-      details: captureData ? JSON.stringify(captureData) : 'Capture data not available'
-    });
-    await payment.save();
     clearInterval(intervalId);
     clearInterval(intervalId2);
   }
