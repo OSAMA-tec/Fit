@@ -496,10 +496,8 @@ const createPayment = async (req, res) => {
     const approvalUrl = orderData.links.find(link => link.rel === "approve").href;
     res.status(response.status).json({ id: orderData.id, approvalUrl });
 
-    // Delete all transactions for the user
     await Payment.deleteMany({ userId: userId });
 
-    // Create a new payment with the status 'Pending'
     const pendingPayment = new Payment({
       userId: userId,
       amount: amount,
@@ -509,8 +507,7 @@ const createPayment = async (req, res) => {
     await pendingPayment.save();
 
     let intervalId, intervalId2;
-    let intervalStatus = { allIntervalsCompleted: false }; // Use an object to store the flag
-
+    let intervalStatus = { allIntervalsCompleted: false }; 
     const onAllIntervalsCompleted = () => {
       intervalStatus.allIntervalsCompleted = true;
     };
@@ -527,9 +524,16 @@ const createPayment = async (req, res) => {
           executePayment(req, orderId, intervalId, intervalId2, userId, amount, intervalStatus, onAllIntervalsCompleted);
         }, 5000);
 
-        setTimeout(() => {
+        setTimeout(async () => { 
           clearInterval(intervalId2);
           onAllIntervalsCompleted();
+
+          const existingPayment = await Payment.findOne({ paypalPaymentId: orderId });
+          if (existingPayment && existingPayment.paymentStatus === 'Pending') {
+            existingPayment.paymentStatus = 'Failed';
+            existingPayment.details = 'Payment failed after all intervals completed';
+            await existingPayment.save();
+          }
         }, 2 * 60 * 1000);
       }, 0);
     }, 0);
@@ -567,7 +571,7 @@ const executePayment = async (req, orderId, intervalId, intervalId2, userId, amo
   } catch (error) {
     console.error("Failed to capture order:", error);
   } finally {
-    if (intervalStatus.allIntervalsCompleted) { // Check the flag from the intervalStatus object
+    if (intervalStatus.allIntervalsCompleted) { 
       const existingPayment = await Payment.findOne({ paypalPaymentId: orderId });
       if (existingPayment && existingPayment.paymentStatus !== 'Success') {
         existingPayment.paymentStatus = 'Failed';
