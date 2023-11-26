@@ -434,11 +434,15 @@ const cancelPayment = (req, res) => {
 //   res.json({ message: 'Order cancelled by the user' });
 // };
 ////////////////////////////////////
+
 const Payment = require('../../models/Payment');
 const axios = require("axios");
 
 const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET } = process.env;
+// const { PAYPAL_ID, PAYPAL_SECRET } = process.env;
 const base = 'https://api-m.paypal.com';
+// const base = 'https://api-m.sandbox.paypal.com';
+
 
 const generateAccessToken = async () => {
   try {
@@ -457,6 +461,7 @@ const generateAccessToken = async () => {
     return data.access_token;
   } catch (error) {
     console.error("Failed to generate Access Token:", error);
+    throw error;
   }
 };
 
@@ -506,36 +511,8 @@ const createPayment = async (req, res) => {
     });
     await pendingPayment.save();
 
-    let intervalId, intervalId2;
-    let intervalStatus = { allIntervalsCompleted: false }; 
-    const onAllIntervalsCompleted = () => {
-      intervalStatus.allIntervalsCompleted = true;
-    };
-
     setTimeout(() => {
-      intervalId = setInterval(() => {
-        executePayment(req, orderId, intervalId, intervalId2, userId, amount, intervalStatus, onAllIntervalsCompleted);
-      }, 5000);
-
-      setTimeout(() => {
-        clearInterval(intervalId);
-
-        intervalId2 = setInterval(() => {
-          executePayment(req, orderId, intervalId, intervalId2, userId, amount, intervalStatus, onAllIntervalsCompleted);
-        }, 5000);
-
-        setTimeout(async () => { 
-          clearInterval(intervalId2);
-          onAllIntervalsCompleted();
-
-          const existingPayment = await Payment.findOne({ paypalPaymentId: orderId });
-          if (existingPayment && existingPayment.paymentStatus === 'Pending') {
-            existingPayment.paymentStatus = 'Failed';
-            existingPayment.details = 'Payment failed after all intervals completed';
-            await existingPayment.save();
-          }
-        }, 2 * 60 * 1000);
-      }, 0);
+      executePayment(req, orderId, userId, amount);
     }, 0);
   } catch (error) {
     console.error("Failed to create order:", error);
@@ -543,46 +520,51 @@ const createPayment = async (req, res) => {
   }
 };
 
-const executePayment = async (req, orderId, intervalId, intervalId2, userId, amount, intervalStatus, onAllIntervalsCompleted) => {
-  let captureData;
-  try {
-    const accessToken = await generateAccessToken();
-    const url = `${base}/v2/checkout/orders/${orderId}/capture`;
+const executePayment = async (req, orderId, userId, amount) => {
+  let intervalId;
+  let attempts = 0;
 
-    const response = await axios.post(url, {}, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
-    });
+  const checkPaymentStatus = async () => {
+    let captureData;
+    try {
+      const accessToken = await generateAccessToken();
+      const url = `${base}/v2/checkout/orders/${orderId}/capture`;
 
-    captureData = response.data;
+      const response = await axios.post(url, {}, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      });
 
+      captureData = response.data;
+
+      const existingPayment = await Payment.findOne({ paypalPaymentId: orderId });
+      if (existingPayment && existingPayment.paymentStatus === 'Pending') {
+        existingPayment.paymentStatus = 'Success';
+        existingPayment.details = JSON.stringify(captureData);
+        await existingPayment.save();
+        clearInterval(intervalId);
+      }
+
+      attempts++;
+      if (attempts >= 30) { 
+        clearInterval(intervalId);
+      }
+    } catch (error) {
+      console.error("Failed to capture order:", error);
+    }
+  };
+
+  intervalId = setInterval(checkPaymentStatus, 4000); 
+  setTimeout(async () => {
     const existingPayment = await Payment.findOne({ paypalPaymentId: orderId });
     if (existingPayment && existingPayment.paymentStatus === 'Pending') {
-      existingPayment.paymentStatus = 'Success';
-      existingPayment.details = JSON.stringify(captureData);
+      existingPayment.paymentStatus = 'Failed';
+      existingPayment.details = 'Payment status not updated after all intervals';
       await existingPayment.save();
     }
-
-    clearInterval(intervalId);
-    clearInterval(intervalId2);
-    onAllIntervalsCompleted();
-  } catch (error) {
-    console.error("Failed to capture order:", error);
-  } finally {
-    if (intervalStatus.allIntervalsCompleted) { 
-      const existingPayment = await Payment.findOne({ paypalPaymentId: orderId });
-      if (existingPayment && existingPayment.paymentStatus !== 'Success') {
-        existingPayment.paymentStatus = 'Failed';
-        existingPayment.details = captureData ? JSON.stringify(captureData) : 'Capture data not available';
-        await existingPayment.save();
-      }
-    }
-
-    clearInterval(intervalId);
-    clearInterval(intervalId2);
-  }
+  }, 30 * 4000); // 30 attempts * 4 seconds = 2 minutes
 };
 
 module.exports = {
