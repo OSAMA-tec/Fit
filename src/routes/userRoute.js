@@ -8,6 +8,7 @@ const {createPlan} = require('../controllers/User/userPlan');
 const {addPoints} = require('../controllers/User/userPoint');
 const {generateGymInfo} = require('../controllers/User/randomData');
 const {getNonAdminUsers} = require('../controllers/User/getAll');
+const {deleteUser} = require('../controllers/User/delete');
 
 
 
@@ -48,5 +49,8 @@ router.get('/start/random', generateGymInfo);
 
 //Random Data
 router.get('/users/all', getNonAdminUsers);
+
+//Delete User
+router.delete('/delete/profile',verifyToken, deleteUser);
 
 module.exports = router;
