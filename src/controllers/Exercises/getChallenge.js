@@ -1,6 +1,6 @@
-const User = require('../../models/User'); 
+const User = require('../../models/User');
 const Plan = require('../../models/Plan');
-const Exercise = require('../../models/Exercise'); 
+const Exercise = require('../../models/Exercise');
 
 const getType1OrType2Exercises = async (req, res) => {
   try {
@@ -35,16 +35,17 @@ const getType1OrType2Exercises = async (req, res) => {
     };
 
     for (let day = 1; day <= 14; day++) {
+      const dayExercises = shuffledExercises.slice((day - 1) * 7, day * 7);
       response.exercises.push({
         day,
-        exerciseIds: shuffledExercises.slice((day - 1) * 7, day * 7).map(e => e._id)
+        exerciseDetails: dayExercises
       });
 
       if (exerciseType === 'Type 2') {
         response.status.push({
           day,
-          completed: false, 
-          pointsEarned: 0   
+          completed: false,
+          pointsEarned: 0
         });
       }
     }

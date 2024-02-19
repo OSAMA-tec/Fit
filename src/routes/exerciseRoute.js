@@ -55,7 +55,7 @@ router.get('/body/part', getAllBodyParts);
 
 
 //create Challenge Exercies
-router.post('/challenges/exercies', createType1AndType2Challenges);
+router.post('/challenges/exercies',verifyToken, createType1AndType2Challenges);
 router.get('/challenges/exercies', verifyToken,getType1OrType2Exercises);
 
 

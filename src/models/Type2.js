@@ -5,21 +5,17 @@ const ExerciseEntrySchema = new mongoose.Schema({
     exerciseIds: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Exercise',
-        required: true
     }],
     reps: {
         type: Number,
-        required: true
     },
     sets: {
         type: Number,
-        required: true
     }
 });
 const DaySchemaType2 = new mongoose.Schema({
     dayNumber: {
         type: Number,
-        required: true
     },
     exercises: [ExerciseEntrySchema],
     submissionStatus: {
@@ -36,7 +32,6 @@ const Type2ChallengeSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true
     },
     requiredPoints: {
         type: Number,
@@ -44,11 +39,9 @@ const Type2ChallengeSchema = new mongoose.Schema({
     },
     startDate: {
         type: Date,
-        required: true
     },
     endDate: {
         type: Date,
-        required: true
     },
     exerciseSchedule: [DaySchemaType2],
     completionStatus: {
