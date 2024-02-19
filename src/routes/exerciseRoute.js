@@ -4,6 +4,8 @@ const {getAllExercises,getExercises,getExercisesByBodyPart,getExercisesByDayOfWe
 const {createExercise,upload} = require('../controllers/Exercises/createExercise');
 const {addBodyParts} = require('../controllers/BodyParts/uploadBody');
 const {getAllBodyParts} = require('../controllers/BodyParts/getBody');
+const {createType1AndType2Challenges} = require('../controllers/Exercises/challengeExercise');
+const {getType1OrType2Exercises} = require('../controllers/Exercises/getChallenge');
 
 
 
@@ -47,5 +49,14 @@ router.post('/body-part/upload', addBodyParts);
 
 //Get body Parts
 router.get('/body/part', getAllBodyParts);
+
+
+
+
+
+//create Challenge Exercies
+router.post('/challenges/exercies', createType1AndType2Challenges);
+router.get('/challenges/exercies', verifyToken,getType1OrType2Exercises);
+
 
 module.exports = router;
