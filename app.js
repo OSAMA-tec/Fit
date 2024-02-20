@@ -5,6 +5,7 @@ const exerciseRoute = require('./src/routes/exerciseRoute');
 const planRoute = require('./src/routes/planRoute');
 const mealRoute = require('./src/routes/mealRoute');
 const paymentRoute = require('./src/routes/paymentRoute');
+const challengeRoute = require('./src/routes/challengeRoute');
 
 
 
@@ -27,6 +28,7 @@ app.use('/api', exerciseRoute);
 app.use('/api', planRoute);
 app.use('/api', mealRoute);
 app.use('/api', paymentRoute);
+app.use('/api', challengeRoute);
 
 // Define your routes here
 

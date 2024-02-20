@@ -4,9 +4,6 @@ const {getAllExercises,getExercises,getExercisesByBodyPart,getExercisesByDayOfWe
 const {createExercise,upload} = require('../controllers/Exercises/createExercise');
 const {addBodyParts} = require('../controllers/BodyParts/uploadBody');
 const {getAllBodyParts} = require('../controllers/BodyParts/getBody');
-const {createType1AndType2Challenges} = require('../controllers/Exercises/challengeExercise');
-const {getType1OrType2Exercises} = require('../controllers/Exercises/getChallenge');
-const {joinCommunityController} = require('../controllers/Exercises/challengeExercise');
 
 
 
@@ -56,9 +53,7 @@ router.get('/body/part', getAllBodyParts);
 
 
 //create Challenge Exercies
-router.post('/challenges/exercies',verifyToken, createType1AndType2Challenges);
-router.get('/challenges/exercies', verifyToken,getType1OrType2Exercises);
-router.post('/challenges', verifyToken,joinCommunityController);
+
 
 
 module.exports = router;

@@ -1,37 +1,60 @@
 const mongoose = require('mongoose');
 
-const ExerciseEntrySchema = new mongoose.Schema({
-    exerciseIds: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Exercise',
-    }],
-    reps: {
-        type: Number,
-    },
-    sets: {
-        type: Number,
-    }
+const exerciseItemSchema = new mongoose.Schema({
+  exerciseId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Exercise',
+  },
+  sets: {
+    type: Number,
+  },
+  reps: {
+    type: Number,
+  },
+  completed: {
+    type: Boolean,
+    default: false
+  }
 });
 
-const DaySchemaType1 = new mongoose.Schema({
-    dayNumber: {
-        type: Number,
-    },
-    exercises: [ExerciseEntrySchema]
+const dailyExerciseSchema = new mongoose.Schema({
+  day: {
+    type: Number,
+    required: true,
+    min: 1,
+    max: 14
+  },
+  exercises: {
+    type: [exerciseItemSchema],
+    validate: [arrayLimit, '{PATH} exceeds the limit of 7']
+  }
 });
 
-const Type1ChallengeSchema = new mongoose.Schema({
-    userId: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-    }],
-    startDate: {
-        type: Date,
-    },
-    endDate: {
-        type: Date,
-    },
-    exerciseSchedule: [DaySchemaType1]
+function arrayLimit(val) {
+  return val.length === 7;
+}
+
+const challengeSchema = new mongoose.Schema({
+  startDate: {
+    type: Date,
+  },
+  endDate: {
+    type: Date,
+  },
+  dailyExercises: {
+    type: [dailyExerciseSchema],
+    validate: [daysArrayLimit, '{PATH} exceeds the limit of 14']
+  },
+  userId: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  }]
 });
 
-module.exports = mongoose.model('Type1Challenge', Type1ChallengeSchema);
+function daysArrayLimit(val) {
+  return val.length === 14;
+}
+
+const Type1Challenge = mongoose.model('Type1Challenge', challengeSchema);
+
+module.exports = Type1Challenge;

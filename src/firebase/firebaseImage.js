@@ -1,14 +1,15 @@
 const bucket = require('./bucket');
 
-function uploadImageToFirebase(name, base64Image) {
+function uploadMediaToFirebase(name, base64Media, mimeType) {
   return new Promise((resolve, reject) => {
     const file = bucket.file(name);
     
-    const buffer = Buffer.from(base64Image, 'base64');
+    const buffer = Buffer.from(base64Media, 'base64');
+    const contentType = mimeType; // Use the mimeType passed to the function
 
     const blobStream = file.createWriteStream({
       metadata: {
-        contentType: 'image/jpeg',
+        contentType: contentType,
       },
     });
 
@@ -17,8 +18,8 @@ function uploadImageToFirebase(name, base64Image) {
     });
 
     blobStream.on('finish', () => {
-      const url = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURI(file.name)}?alt=media`;
-
+      // Construct the public URL for the file
+      const url = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(file.name)}?alt=media`;
       resolve(url);
     });
 
@@ -26,4 +27,4 @@ function uploadImageToFirebase(name, base64Image) {
   });
 }
 
-module.exports = uploadImageToFirebase;
+module.exports = uploadMediaToFirebase;
