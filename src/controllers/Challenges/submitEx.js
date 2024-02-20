@@ -6,7 +6,7 @@ const uploadMediaToFirebase = require('../../firebase/firebaseImage');
 const fs = require('fs')
 // Controller function to mark challenge as completed
 const markChallengeAsCompleted = async (req, res) => {
-    const { challengeType, typeId, dayNumber, completed } = req.body;
+    const { challengeType, typeId, dayNumber, completed,old } = req.body;
     const userId = req.user.id;
     const file=req.file
     
@@ -32,20 +32,28 @@ const markChallengeAsCompleted = async (req, res) => {
             // Convert the uploaded file buffer to Base64
             const base64Media = file.buffer.toString('base64');
             const contentType = file.mimetype;
-            console.log(contentType)
+
             // Upload to Firebase
             const mediaUrl = await uploadMediaToFirebase(`challengeMedia/${userId}_${Date.now()}`, base64Media, contentType);
 
+            // Define the update object
+            let updateObject = {
+                $set: {
+                    'dailyStatus.$[elem].success': completed,
+                    'dailyStatus.$[elem].proofURL': mediaUrl,
+                    'dailyStatus.$[elem].proofType': contentType.includes('video') ? 'video' : 'image'
+                },
+                $inc: { 'overallStatus.pointsEarned': completed ? 20 : 0 }
+            };
+
+            // If old is true, set penaltyPaid to true
+            if (old) {
+                updateObject.$set['overallStatus.penaltyPaid'] = true;
+            }
+
             await UserStatus.updateOne(
                 { userId: userId, challengeId: typeId },
-                {
-                    $set: {
-                        'dailyStatus.$[elem].success': completed,
-                        'dailyStatus.$[elem].proofURL': mediaUrl,
-                        'dailyStatus.$[elem].proofType': contentType.includes('video') ? 'video' : 'image'
-                    },
-                    $inc: { 'overallStatus.pointsEarned': completed ? 20 : 0 }
-                },
+                updateObject,
                 { arrayFilters: [{ 'elem.dayNumber': dayNumber }] }
             );
 

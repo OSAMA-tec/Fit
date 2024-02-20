@@ -30,4 +30,6 @@ const CustomizedExercisePlanSchema = new mongoose.Schema({
   weeklyExercisePlan: [CustomExerciseEntrySchema]
 });
 
+
+
 module.exports = mongoose.model('CustomizedExercisePlan', CustomizedExercisePlanSchema);
