@@ -1,15 +1,15 @@
 const Exercise = require('../../models/Exercise');
 const Type1Challenge = require('../../models/Type1');
 const Type2Challenge = require('../../models/Type2');
-const UserStatus = require('../../models/UserStatus');
+const UserStatus = require('../../models/Type2Status');
 
 const createType1AndType2Challenges = async (req, res) => {
   try {
     if (!req.user || !req.user.id) {
       return res.status(400).json({ message: 'User information is missing.' });
     }
-    await Type1Challenge.deleteMany({ userId: req.user._id });
-    await Type2Challenge.deleteMany({ userId: req.user._id });
+    await Type1Challenge.deleteMany();
+    await Type2Challenge.deleteMany();
 
     const unpaidExercises = await Exercise.find({ paid: false }).lean();
     const paidExercises = await Exercise.find({ paid: true }).lean();
@@ -23,7 +23,6 @@ const createType1AndType2Challenges = async (req, res) => {
 
     const shuffledUnpaidExercises = unpaidExercises.sort(() => 0.5 - Math.random());
     const shuffledPaidExercises = paidExercises.sort(() => 0.5 - Math.random());
-
     const startDate = new Date();
     const endDate = new Date(startDate.getTime() + (14 * 24 * 60 * 60 * 1000));
 
@@ -35,7 +34,9 @@ const createType1AndType2Challenges = async (req, res) => {
         sets: 15
       }))
     }));
-
+    type1ExerciseSchedule.forEach((daySchedule, index) => {
+      console.log(`Day ${index + 1} exercises:`, daySchedule.exercises);
+    });
     const type1Challenge = new Type1Challenge({
       startDate,
       endDate,
@@ -99,8 +100,8 @@ const joinCommunityController = async (req, res) => {
         return res.status(404).json({ message: 'Type 1 Challenge not found.' });
       }
 
-      if (!type1Challenge.userIds.includes(userId)) {
-        type1Challenge.userIds.push(userId);
+      if (!type1Challenge.userId.includes(userId)) {
+        type1Challenge.userId.push(userId);
         await type1Challenge.save();
       }
 
