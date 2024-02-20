@@ -21,10 +21,10 @@ const DaySchemaType1 = new mongoose.Schema({
 });
 
 const Type1ChallengeSchema = new mongoose.Schema({
-    userId: {
+    userId: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-    },
+    }],
     startDate: {
         type: Date,
     },

@@ -52,24 +52,13 @@ const createType1AndType2Challenges = async (req, res) => {
         exerciseId: shuffledPaidExercises[index]._id,
         reps: 3,
         sets: 15
-      }],
-      submissionStatus: {
-        success: false,
-        proofType: '',
-        proofURL: ''
-      }
+      }]
     }));
 
     const type2Challenge = new Type2Challenge({
-      userId: req.user._id,
       startDate,
       endDate,
-      exerciseSchedule: type2ExerciseSchedule,
-      completionStatus: {
-        challengeCompleted: false,
-        pointsEarned: 0,
-        penaltyPaid: false
-      }
+      exerciseSchedule: type2ExerciseSchedule
     });
 
     await type2Challenge.save();
