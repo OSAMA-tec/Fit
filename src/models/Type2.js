@@ -10,7 +10,11 @@ const ExerciseEntrySchema = new mongoose.Schema({
     },
     sets: {
         type: Number,
-    }
+    },
+    eachExercise: {
+        type: Boolean,
+        default: false
+      }
 });
 
 const DaySchemaType2 = new mongoose.Schema({

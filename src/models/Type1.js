@@ -14,6 +14,10 @@ const exerciseItemSchema = new mongoose.Schema({
   completed: {
     type: Boolean,
     default: false
+  },
+  eachExercise: {
+    type: Boolean,
+    default: false
   }
 });
 
