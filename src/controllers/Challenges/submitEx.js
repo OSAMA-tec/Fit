@@ -89,7 +89,7 @@ const updateExerciseStatus = async (req, res) => {
           break;
         case 'Type2':
           // First find the challengeId from type2status
-          const type2status = await Type2Status.findOne({ userId: new mongoose.Types.ObjectId(userId) });
+          const type2status = await UserStatus.findOne({ userId: new mongoose.Types.ObjectId(userId) });
           if (!type2status) {
             return res.status(404).json({ message: 'Type2Status for user not found' });
           }
