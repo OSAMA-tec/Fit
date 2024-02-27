@@ -102,6 +102,7 @@ const getChallenges = async (req, res) => {
       ...type1Challenges.map(challenge => ({
         typeTitle: '14 Days Challenge',
         type: 'For ALL Users',
+        typeChallenges: 'Type1',
         typeId: challenge._id,
         startDate: challenge.startDate,
         endDate: challenge.endDate
@@ -109,6 +110,7 @@ const getChallenges = async (req, res) => {
       ...type2Challenges.map(challenge => ({
         typeTitle: '14 Days Challenge',
         type: 'For Premium and Elite Users',
+        typeChallenges: 'Type2',
         typeId: challenge._id,
         startDate: challenge.startDate,
         endDate: challenge.endDate
