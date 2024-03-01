@@ -37,7 +37,7 @@ const joinChallenge = async (req, res) => {
         userId: userId,
         challengeId: typeId,
         dailyStatus: Array.from({ length: 14 }, (_, index) => ({
-          dayNumber: index + 1,
+          day: index + 1,
           success: false,
           proofType: '',
           proofURL: ''
@@ -86,7 +86,7 @@ const getJoinedChallenge = async (req, res) => {
         let allDaysSuccess = true;
 
         challenge.dailyExercises.forEach(day => {
-          const dailyStatus = userStatus.dailyStatus.find(status => status.dayNumber === day.dayNumber);
+          const dailyStatus = userStatus.dailyStatus.find(status => status.day === day.day);
 
           if (dailyStatus) {
             day.exercises.forEach(exercise => {

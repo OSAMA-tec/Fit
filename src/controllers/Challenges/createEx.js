@@ -50,7 +50,7 @@ const saveExerciseToChallenge = async (req, res) => {
 
     // Create exercise schedule structure for Type2Challenge
     const exerciseScheduleType2 = dailyPaidExercisesChunks.map((exercisesChunk, index) => ({
-      dayNumber: index + 1,
+      day: index + 1,
       exercises: exercisesChunk.map(ex => ({
         exerciseIds: [ex._id],
         sets: defaultSets,

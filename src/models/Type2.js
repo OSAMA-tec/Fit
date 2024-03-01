@@ -18,7 +18,7 @@ const ExerciseEntrySchema = new mongoose.Schema({
 });
 
 const DaySchemaType2 = new mongoose.Schema({
-    dayNumber: {
+    day: {
         type: Number,
     },
     exercises: [ExerciseEntrySchema],

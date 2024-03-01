@@ -8,7 +8,7 @@ const mongoose = require('mongoose');
 const fs = require('fs')
 // Controller function to mark challenge as completed
 const markChallengeAsCompleted = async (req, res) => {
-    const { challengeType, typeId, dayNumber, completed,old } = req.body;
+    const { challengeType, typeId, day, completed,old } = req.body;
     const userId = req.user.id;
     const file=req.file
     
@@ -20,7 +20,7 @@ const markChallengeAsCompleted = async (req, res) => {
                 { $set: { 'dailyExercises.$[dayElem].exercises.$[exerciseElem].completed': completed } },
                 {
                     arrayFilters: [
-                        { 'dayElem.day': dayNumber },
+                        { 'dayElem.day': day },
                         { 'exerciseElem.completed': { $ne: true } }
                     ]
                 }
@@ -61,7 +61,7 @@ const markChallengeAsCompleted = async (req, res) => {
             await UserStatus.updateOne(
                 { userId: userId, challengeId: typeId },
                 updateObject,
-                { arrayFilters: [{ 'elem.dayNumber': dayNumber }] }
+                { arrayFilters: [{ 'elem.day': day }] }
             );
             
             return res.status(200).json({ message: 'Type2 challenge updated successfully', mediaUrl,userStatus });
@@ -78,7 +78,7 @@ const markChallengeAsCompleted = async (req, res) => {
 };
 const updateExerciseStatus = async (req, res) => {
     try {
-      const { challengeType, typeId, dayNumber, exerciseId } = req.body;
+      const { challengeType, typeId, day, exerciseId } = req.body;
       const userId = req.user.id;
   
       let challengeModel;
@@ -101,7 +101,7 @@ const updateExerciseStatus = async (req, res) => {
           challengeId = type2status.challengeId;
           challengeModel = Type2Challenge;
           challengeFieldName = 'exerciseSchedule';
-          dayFieldName = 'dayNumber';
+          dayFieldName = 'day';
           break;
         default:
           return res.status(400).json({ message: 'Invalid challenge type' });
@@ -123,7 +123,7 @@ const updateExerciseStatus = async (req, res) => {
       // Update the eachExercise field for the matching exercise
       let exerciseUpdated = false;
       challenge[challengeFieldName].forEach(day => {
-        if (day[dayFieldName] === dayNumber) {
+        if (day[dayFieldName] === day) {
           day.exercises.forEach(exerciseEntry => {
             const exerciseIds = exerciseEntry.exerciseIds || [exerciseEntry.exerciseId];
             if (exerciseIds.some(exId => exId.equals(new mongoose.Types.ObjectId(exerciseId)))) {

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const DailyStatusSchema = new mongoose.Schema({
-    dayNumber: {
+    day: {
         type: Number,
         required: true
     },
