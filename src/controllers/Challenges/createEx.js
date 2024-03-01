@@ -41,7 +41,7 @@ const saveExerciseToChallenge = async (req, res) => {
     const dailyExercisesType1 = dailyUnpaidExercisesChunks.map((exercisesChunk, index) => ({
       day: index + 1,
       exercises: exercisesChunk.map(ex => ({
-        exerciseId: ex._id,
+        exerciseIds: ex._id,
         sets: defaultSets,
         reps: defaultReps,
         completed: false
