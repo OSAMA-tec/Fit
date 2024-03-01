@@ -142,14 +142,13 @@ const recoverPassword = async (req, res) => {
 
 const updatePassword = async (req, res) => {
   try {
-      const uid = req.user.id;
-      console.log(uid)
+      const email=req.body.email
       const password = req.body.password;
       if (!password) {
           return res.status(500).send('password not passed');
       }
 
-      let user = await User.findById(uid);
+      let user = await User.findOne({email:email});
       console.log(user)
       if (!user) {
           return res.status(400).send('User not Found');

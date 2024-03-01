@@ -20,7 +20,7 @@ const verifyToken = require('../middleware/auth');
 router.post('/signup', signUp);
 router.post('/login', login);
 router.post('/recover/password', recoverPassword);
-router.put('/update/password',verifyToken, updatePassword);
+router.put('/update/password', updatePassword);
 router.post('/verify/otp', verifyUser);
 
 
