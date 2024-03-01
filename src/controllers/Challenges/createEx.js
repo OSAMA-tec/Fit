@@ -2,6 +2,7 @@ const Exercise = require('../../models/Exercise');
 const Type1Challenge = require('../../models/Type1');
 const Type2Challenge = require('../../models/Type2');
 const UserStatus = require('../../models/Type2Status');
+const axios = require('axios'); 
 
 // Controller function to save exercise to challenge
 const saveExerciseToChallenge = async (req, res) => {
@@ -12,7 +13,7 @@ const saveExerciseToChallenge = async (req, res) => {
     await UserStatus.deleteMany();
 
     // Define start and end dates
-    const startDate = new Date('2024-02-27');
+    const startDate = new Date();
     const endDate = new Date(startDate.getTime() + (13 * 24 * 60 * 60 * 1000)); 
 
 
@@ -95,8 +96,10 @@ function chunkArray(arr, chunkSize) {
 
 
 
+
 const getChallenges = async (req, res) => {
   try {
+    const today = new Date(); 
     const type1Challenges = await Type1Challenge.find().select('startDate endDate _id');
     const type2Challenges = await Type2Challenge.find().select('startDate endDate _id');
 
@@ -119,13 +122,19 @@ const getChallenges = async (req, res) => {
       }))
     ];
 
-    // Send the formatted challenges in the response
+    const hasEndedChallenges = formattedChallenges.some(challenge => new Date(challenge.endDate) < today);
+
+    if (hasEndedChallenges) {
+      await axios.post('https://fitnessapp-666y.onrender.com/api/challenge', {
+        message: 'A challenge has ended.'
+      });
+    }
+
     return res.status(200).json({
       success: true,
       challenges: formattedChallenges
     });
   } catch (error) {
-    // Handle any errors that occur during the process
     return res.status(500).json({
       success: false,
       message: 'Failed to retrieve challenges',
@@ -133,6 +142,7 @@ const getChallenges = async (req, res) => {
     });
   }
 };
+
 
 
 

@@ -10,7 +10,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 const verifyToken = require('../middleware/auth');
 
 // Challenge Routes
-router.post('/challenge', verifyToken, saveExerciseToChallenge);
+router.post('/challenge', saveExerciseToChallenge);
 router.get('/challenge', verifyToken, getChallenges);
 router.post('/challenge/join', verifyToken, joinChallenge);
 router.get('/challenge/join', verifyToken, getJoinedChallenge);
