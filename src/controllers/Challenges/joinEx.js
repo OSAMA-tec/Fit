@@ -16,7 +16,7 @@ const joinChallenge = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-
+    console.log(challengeType)
     // Join Type1 Challenge
     if (challengeType === 'Type1') {
       await Type1Challenge.findByIdAndUpdate(
@@ -76,15 +76,30 @@ const getJoinedChallenge = async (req, res) => {
         });
       }
     } else if (challengeType === 'Type2') {
+      // Fetch the Type2Challenge
       const challenge = await Type2Challenge.findById(typeId).populate('exerciseSchedule.exercises.exerciseIds');
 
+      // Fetch the UserStatus for the user and this challenge
       const userStatus = await UserStatus.findOne({ userId: userId, challengeId: typeId });
 
       if (challenge && userStatus) {
+        challenge.exerciseSchedule.forEach(day => {
+          const dailyStatus = userStatus.dailyStatus.find(status => status.dayNumber === day.dayNumber);
+          console.log(dailyStatus)
+          if (dailyStatus) {
+            day.exercises.forEach(exercise => {
+                exercise._doc.completed = dailyStatus.success;
+            });
+        } else {
+            day.exercises.forEach(exercise => {
+                exercise._doc.completed = false;
+            });
+        }
+        });
+
         return res.status(200).json({
           challengeType: 'Type2',
           challengeDetails: challenge,
-          userStatus: userStatus
         });
       }
     }
@@ -98,6 +113,7 @@ const getJoinedChallenge = async (req, res) => {
     });
   }
 };
+
 
 
 

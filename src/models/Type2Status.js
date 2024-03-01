@@ -5,7 +5,7 @@ const DailyStatusSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    completed: {
+    success: {
         type: Boolean,
         default: false
     },

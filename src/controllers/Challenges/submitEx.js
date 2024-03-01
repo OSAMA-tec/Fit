@@ -41,7 +41,7 @@ const markChallengeAsCompleted = async (req, res) => {
             // Define the update object
             let updateObject = {
                 $set: {
-                    'dailyStatus.$[elem].completed': completed,
+                    'dailyStatus.$[elem].success': completed,
                     'dailyStatus.$[elem].proofURL': mediaUrl,
                     'dailyStatus.$[elem].proofType': contentType.includes('video') ? 'video' : 'image'
                 },
@@ -52,14 +52,19 @@ const markChallengeAsCompleted = async (req, res) => {
             if (old) {
                 updateObject.$set['overallStatus.penaltyPaid'] = true;
             }
-
+            console.log(userId)
+            console.log(typeId)
+            const userStatus = await UserStatus.findOne({
+              userId: userId,
+              challengeId:typeId, 
+          });
             await UserStatus.updateOne(
                 { userId: userId, challengeId: typeId },
                 updateObject,
                 { arrayFilters: [{ 'elem.dayNumber': dayNumber }] }
             );
-
-            return res.status(200).json({ message: 'Type2 challenge updated successfully', mediaUrl });
+            
+            return res.status(200).json({ message: 'Type2 challenge updated successfully', mediaUrl,userStatus });
         } else {
             return res.status(400).json({ message: 'Invalid challenge type' });
         }
