@@ -28,7 +28,7 @@ const joinChallenge = async (req, res) => {
     }
 
     if (challengeType === 'Type2') {
-      if (!user.plan || (user.plan.name !== 'elite' && user.plan.name !== 'premium')) {
+      if (!user.plan || !(["premium", "elite"].includes(user.plan.name.toLowerCase()))) {
         return res.status(403).json({ message: 'You are not eligible. You need to have an elite or premium plan to join this challenge.' });
       }
 
