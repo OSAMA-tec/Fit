@@ -6,7 +6,7 @@ const UserStatus = require('../../models/Type2Status');
 // Controller function to join a challenge
 const joinChallenge = async (req, res) => {
   const userId = req.user.id;
-  const { challengeType, typeId } = req.body; 
+  const { challengeType, typeId } = req.body;
 
   try {
     // Fetch the user and their plan
@@ -83,19 +83,31 @@ const getJoinedChallenge = async (req, res) => {
       const userStatus = await UserStatus.findOne({ userId: userId, challengeId: typeId });
 
       if (challenge && userStatus) {
+        let allDaysSuccess = true;
+
         challenge.dailyExercises.forEach(day => {
           const dailyStatus = userStatus.dailyStatus.find(status => status.dayNumber === day.dayNumber);
-          console.log(dailyStatus)
+
           if (dailyStatus) {
             day.exercises.forEach(exercise => {
-                exercise._doc.completed = dailyStatus.success;
+              exercise._doc.completed = dailyStatus.success;
             });
-        } else {
+
+            if (!dailyStatus.success) {
+              allDaysSuccess = false;
+            }
+
+          } else {
             day.exercises.forEach(exercise => {
-                exercise._doc.completed = false;
+              exercise._doc.completed = false;
             });
-        }
+            allDaysSuccess = false; 
+          }
         });
+
+        if (allDaysSuccess) {
+          await User.findByIdAndUpdate(userId, { $inc: { points: 200 } });
+        }
 
         return res.status(200).json({
           challengeType: 'Type2',

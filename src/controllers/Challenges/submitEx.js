@@ -47,7 +47,7 @@ const markChallengeAsCompleted = async (req, res) => {
                 },
                 $inc: { 'overallStatus.pointsEarned': completed ? 20 : 0 }
             };
-
+            await User.findByIdAndUpdate(userId, { $inc: { points: 20 } });
             // If old is true, set penaltyPaid to true
             if (old) {
                 updateObject.$set['overallStatus.penaltyPaid'] = true;
