@@ -77,13 +77,13 @@ const getJoinedChallenge = async (req, res) => {
       }
     } else if (challengeType === 'Type2') {
       // Fetch the Type2Challenge
-      const challenge = await Type2Challenge.findById(typeId).populate('exerciseSchedule.exercises.exerciseIds');
+      const challenge = await Type2Challenge.findById(typeId).populate('dailyExercises.exercises.exerciseIds');
 
       // Fetch the UserStatus for the user and this challenge
       const userStatus = await UserStatus.findOne({ userId: userId, challengeId: typeId });
 
       if (challenge && userStatus) {
-        challenge.exerciseSchedule.forEach(day => {
+        challenge.dailyExercises.forEach(day => {
           const dailyStatus = userStatus.dailyStatus.find(status => status.dayNumber === day.dayNumber);
           console.log(dailyStatus)
           if (dailyStatus) {

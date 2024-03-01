@@ -35,7 +35,7 @@ const Type2ChallengeSchema = new mongoose.Schema({
     endDate: {
         type: Date,
     },
-    exerciseSchedule: [DaySchemaType2],
+    dailyExercises: [DaySchemaType2],
 });
 
 module.exports = mongoose.model('Type2Challenge', Type2ChallengeSchema);

@@ -68,7 +68,7 @@ const saveExerciseToChallenge = async (req, res) => {
       requiredPoints: 50, 
       startDate,
       endDate,
-      exerciseSchedule: exerciseScheduleType2
+      dailyExercises: exerciseScheduleType2
     });
     await type2Challenge.save();
 
