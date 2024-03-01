@@ -36,14 +36,17 @@ const markChallengeAsCompleted = async (req, res) => {
             const contentType = file.mimetype;
 
             // Upload to Firebase
-            const mediaUrl = await uploadMediaToFirebase(`challengeMedia/${userId}_${Date.now()}`, base64Media, contentType);
-
+            const mediaUrls = await Promise.all(files.map(async (file) => {
+              const base64Media = file.buffer.toString('base64');
+              const contentType = file.mimetype;
+              return await uploadMediaToFirebase(`challengeMedia/${userId}_${Date.now()}`, base64Media, contentType);
+          }));
             // Define the update object
             let updateObject = {
                 $set: {
                     'dailyStatus.$[elem].success': completed,
-                    'dailyStatus.$[elem].proofURL': mediaUrl,
-                    'dailyStatus.$[elem].proofType': contentType.includes('video') ? 'video' : 'image'
+                    'dailyStatus.$[elem].proofURL': mediaUrls,
+                    'dailyStatus.$[elem].proofType': files.some(file => file.mimetype.includes('video')) ? 'video' : 'image'
                 },
                 $inc: { 'overallStatus.pointsEarned': completed ? 20 : 0 }
             };
@@ -64,7 +67,7 @@ const markChallengeAsCompleted = async (req, res) => {
                 { arrayFilters: [{ 'elem.day': day }] }
             );
             
-            return res.status(200).json({ message: 'Type2 challenge updated successfully', mediaUrl,userStatus });
+            return res.status(200).json({ message: 'Type2 challenge updated successfully', mediaUrls,userStatus });
         } else {
             return res.status(400).json({ message: 'Invalid challenge type' });
         }

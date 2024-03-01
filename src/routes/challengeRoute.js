@@ -15,6 +15,6 @@ router.get('/challenge', verifyToken, getChallenges);
 router.post('/challenge/join', verifyToken, joinChallenge);
 router.get('/challenge/join', verifyToken, getJoinedChallenge);
 router.post('/challenge/exercise', verifyToken,updateExerciseStatus);
-router.post('/challenge/complete', verifyToken, upload.single('media'), markChallengeAsCompleted);
+router.post('/challenge/complete', verifyToken, upload.array('media', 5), markChallengeAsCompleted);
 
 module.exports = router;

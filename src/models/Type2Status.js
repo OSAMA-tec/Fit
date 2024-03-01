@@ -10,7 +10,7 @@ const DailyStatusSchema = new mongoose.Schema({
         default: false
     },
     proofType: String,
-    proofURL: String
+    proofURL: [String]
 });
 
 const UserStatusSchema = new mongoose.Schema({
