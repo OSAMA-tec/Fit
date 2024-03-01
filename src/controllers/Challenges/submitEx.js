@@ -41,7 +41,7 @@ const markChallengeAsCompleted = async (req, res) => {
             // Define the update object
             let updateObject = {
                 $set: {
-                    'dailyStatus.$[elem].success': completed,
+                    'dailyStatus.$[elem].completed': completed,
                     'dailyStatus.$[elem].proofURL': mediaUrl,
                     'dailyStatus.$[elem].proofType': contentType.includes('video') ? 'video' : 'image'
                 },
@@ -93,7 +93,7 @@ const updateExerciseStatus = async (req, res) => {
           if (!type2status) {
             return res.status(404).json({ message: 'Type2Status for user not found' });
           }
-          challengeId = type2status.challengeId; // Assuming this is how you get the challengeId from type2status
+          challengeId = type2status.challengeId;
           challengeModel = Type2Challenge;
           challengeFieldName = 'exerciseSchedule';
           dayFieldName = 'dayNumber';
