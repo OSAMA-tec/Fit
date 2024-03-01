@@ -10,8 +10,8 @@ const createWeeklyExercisePlan = async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        if (user.plan.name !== 'elite' && user.plan.name !== 'premium') {
-            return res.status(403).json({ message: 'Kindly change the plan to use this feature' });
+        if (!user.plan || !(["premium", "elite"].includes(user.plan.name.toLowerCase()))) {
+          return res.status(403).json({ message: 'Kindly change the plan to use this feature' });
         }
 
         const startDate = new Date();
