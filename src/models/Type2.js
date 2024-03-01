@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
 
 const ExerciseEntrySchema = new mongoose.Schema({
-    exerciseIds: [{
+    exerciseId:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Exercise',
-    }],
+    },
     reps: {
         type: Number,
     },

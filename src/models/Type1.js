@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
 
 const exerciseItemSchema = new mongoose.Schema({
-  exerciseIds: [{
+  exerciseId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Exercise',
-  }],
+  },
   sets: {
     type: Number,
   },

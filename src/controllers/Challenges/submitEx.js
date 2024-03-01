@@ -78,7 +78,7 @@ const markChallengeAsCompleted = async (req, res) => {
 };
 const updateExerciseStatus = async (req, res) => {
     try {
-      const { challengeType, typeId, day, exerciseIds } = req.body;
+      const { challengeType, typeId, day, exerciseId } = req.body;
       const userId = req.user.id;
   
       let challengeModel;
@@ -125,8 +125,8 @@ const updateExerciseStatus = async (req, res) => {
       challenge[challengeFieldName].forEach(day => {
         if (day[dayFieldName] === day) {
           day.exercises.forEach(exerciseEntry => {
-            const exerciseIds = exerciseEntry.exerciseIds || [exerciseEntry.exerciseIds];
-            if (exerciseIds.some(exId => exId.equals(new mongoose.Types.ObjectId(exerciseIds)))) {
+            const exerciseId = exerciseEntry.exerciseId || [exerciseEntry.exerciseId];
+            if (exerciseId.some(exId => exId.equals(new mongoose.Types.ObjectId(exerciseId)))) {
               exerciseEntry.eachExercise = true;
               exerciseUpdated = true;
             }
