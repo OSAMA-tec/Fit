@@ -10,7 +10,7 @@ const fs = require('fs')
 const markChallengeAsCompleted = async (req, res) => {
     const { challengeType, typeId, day, completed,old } = req.body;
     const userId = req.user.id;
-    const file=req.file
+    const files = req.files;
     
     try {
         if (challengeType === 'Type1') {
@@ -27,13 +27,10 @@ const markChallengeAsCompleted = async (req, res) => {
             );
             return res.status(200).json({ message: 'Type1 challenge updated successfully' });
         } else if (challengeType === 'Type2') {
-            if (!file) {
+            if (!files) {
                 return res.status(400).json({ message: 'Type2 challenge requires a picture or video.' });
             }
             
-            // Convert the uploaded file buffer to Base64
-            const base64Media = file.buffer.toString('base64');
-            const contentType = file.mimetype;
 
             // Upload to Firebase
             const mediaUrls = await Promise.all(files.map(async (file) => {
