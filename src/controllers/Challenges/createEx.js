@@ -65,7 +65,6 @@ const saveExerciseToChallenge = async (req, res) => {
       dailyExercises: dailyExercisesType1,
     });
     await type1Challenge.save();
-
     // Save to Type2Challenge with paid exercises
     const type2Challenge = new Type2Challenge({
       requiredPoints: 50,

@@ -68,7 +68,6 @@ const getJoinedChallenge = async (req, res) => {
   try {
     if (challengeType === 'Type1') {
       const challenge = await Type1Challenge.findById(typeId).populate('dailyExercises.exercises.exerciseIds');
-
       if (challenge && challenge.userId.includes(userId)) {
         return res.status(200).json({
           challengeType: 'Type1',
