@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const SibApiV3Sdk = require('sib-api-v3-sdk');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
+const argon2 = require('argon2');
 
 SibApiV3Sdk.ApiClient.instance.authentications['api-key'].apiKey = process.env.SENDINBLUE_API_KEY;
 async function sendOtpViaEmail(email, otp) {
@@ -154,8 +155,7 @@ const updatePassword = async (req, res) => {
           return res.status(400).send('User not Found');
       }
 
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(password, salt);
+      hashedPassword = await argon2.hash(password);
 
       user.password = hashedPassword;
       await user.save();
