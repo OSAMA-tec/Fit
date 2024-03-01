@@ -12,8 +12,10 @@ const saveExerciseToChallenge = async (req, res) => {
     await UserStatus.deleteMany();
 
     // Define start and end dates
-    const startDate = new Date();
-    const endDate = new Date(startDate.getTime() + 14 * 24 * 60 * 60 * 1000); // 14 days later
+    const startDate = new Date('2024-02-27');
+    const endDate = new Date(startDate.getTime() + (13 * 24 * 60 * 60 * 1000)); 
+
+
 
     const defaultSets = 3;
     const defaultReps = 12;
@@ -65,7 +67,7 @@ const saveExerciseToChallenge = async (req, res) => {
 
     // Save to Type2Challenge with paid exercises
     const type2Challenge = new Type2Challenge({
-      requiredPoints: 50, 
+      requiredPoints: 50,
       startDate,
       endDate,
       dailyExercises: exerciseScheduleType2
