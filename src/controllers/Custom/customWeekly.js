@@ -52,7 +52,7 @@ const getWeeklyExercises = async (req, res) => {
 
     try {
         const exercisePlans = await CustomizedExercisePlan.find({ userId }).populate('weeklyExercisePlan.exerciseIds');
-
+        console.log(exercisePlans)
         if (!exercisePlans) {
             return res.status(404).json({ message: 'No exercise plans found for this user.' });
         }
@@ -116,9 +116,9 @@ const deleteCustomExercisePlan = async (req, res) => {
     if (!plan) {
       return res.status(404).json({ message: 'Customized exercise plan not found or does not belong to the user.' });
     }
-
+    console.log(plan)
     // Delete the plan
-    await CustomizedExercisePlan.deleteOne({ _id: CustomizedExercisePlanID });
+    await CustomizedExercisePlan.deleteMany({ _id: CustomizedExercisePlanID });
 
     return res.status(200).json({ message: 'Customized exercise plan deleted successfully.' });
   } catch (error) {
