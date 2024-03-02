@@ -4,7 +4,7 @@ const User = require('../../models/User');
 
 const createPlanAndUpdateUser = async (req, res) => {
   try {
-    const userId = req.body.id;
+    const userId = req.user.id;
     console.log(userId)
     const { planName, subscription } = req.body;
 
