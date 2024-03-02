@@ -13,7 +13,7 @@ const saveExerciseToChallenge = async (req, res) => {
     await UserStatus.deleteMany();
 
     // Define start and end dates
-    const startDate = new Date();
+    const startDate = new Date('2024-02-28');
     const endDate = new Date(startDate.getTime() + (13 * 24 * 60 * 60 * 1000)); 
 
 
