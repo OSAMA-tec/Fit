@@ -13,7 +13,7 @@ const createWeeklyExercisePlan = async (req, res) => {
         if (!user.plan || !(["premium", "elite"].includes(user.plan.name.toLowerCase()))) {
           return res.status(403).json({ message: 'Kindly change the plan to use this feature' });
         }
-
+         await CustomizedExercisePlan.deleteMany({userId: userId });
         const startDate = new Date();
         const endDate = new Date();
         endDate.setDate(startDate.getDate() + 7);
