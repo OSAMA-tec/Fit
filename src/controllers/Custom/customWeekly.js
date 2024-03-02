@@ -3,7 +3,9 @@ const User = require('../../models/User');
 const createWeeklyExercisePlan = async (req, res) => {
     const userId = req.user.id;
     const { Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday } = req.body;
-
+    if (!Monday.length || !Tuesday.length || !Wednesday.length || !Thursday.length || !Friday.length || !Saturday.length || !Sunday.length) {
+      return res.status(400).json({ message: 'Exercise IDs for each day must not be empty' });
+  }
     try {
         const user = await User.findById(userId).populate('plan');
         if (!user) {
