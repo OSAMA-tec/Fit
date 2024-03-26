@@ -13,11 +13,11 @@ const saveExerciseToChallenge = async (req, res) => {
     await UserStatus.deleteMany();
 
     // Define start and end dates
-    // const startDate = new Date();
-    // const endDate = new Date(startDate.getTime() + (13 * 24 * 60 * 60 * 1000)); 
+    const startDate = new Date();
+    const endDate = new Date(startDate.getTime() + (13 * 24 * 60 * 60 * 1000)); 
 
-    const startDate = new Date(new Date().getTime() - (4 * 24 * 60 * 60 * 1000));
-    const endDate = new Date(startDate.getTime() + (13 * 24 * 60 * 60 * 1000));
+    // const startDate = new Date(new Date().getTime() - (4 * 24 * 60 * 60 * 1000));
+    // const endDate = new Date(startDate.getTime() + (13 * 24 * 60 * 60 * 1000));
 
     const defaultSets = 3;
     const defaultReps = 12;
