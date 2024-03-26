@@ -2,7 +2,7 @@ const Exercise = require('../../models/Exercise');
 const Type1Challenge = require('../../models/Type1');
 const Type2Challenge = require('../../models/Type2');
 const UserStatus = require('../../models/Type2Status');
-const axios = require('axios'); 
+const axios = require('axios');
 
 // Controller function to save exercise to challenge
 const saveExerciseToChallenge = async (req, res) => {
@@ -13,10 +13,11 @@ const saveExerciseToChallenge = async (req, res) => {
     await UserStatus.deleteMany();
 
     // Define start and end dates
-    const startDate = new Date();
-    const endDate = new Date(startDate.getTime() + (13 * 24 * 60 * 60 * 1000)); 
+    // const startDate = new Date();
+    // const endDate = new Date(startDate.getTime() + (13 * 24 * 60 * 60 * 1000)); 
 
-
+    const startDate = new Date(new Date().getTime() - (4 * 24 * 60 * 60 * 1000));
+    const endDate = new Date(startDate.getTime() + (13 * 24 * 60 * 60 * 1000));
 
     const defaultSets = 3;
     const defaultReps = 12;
@@ -98,7 +99,7 @@ function chunkArray(arr, chunkSize) {
 
 const getChallenges = async (req, res) => {
   try {
-    const today = new Date(); 
+    const today = new Date();
     const type1Challenges = await Type1Challenge.find().select('startDate endDate _id');
     const type2Challenges = await Type2Challenge.find().select('startDate endDate _id');
 
