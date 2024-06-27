@@ -7,23 +7,19 @@ dotenv.config();
 const login = async (req, res) => {
   const { email, password, way } = req.body;
 
-  if (way === 'google') {
-    if (!email) {
-      return res.status(400).send("Email is required");
-    }
-  } else {
-    if (!(email && password)) {
-      return res.status(400).send("Email and password are required");
-    }
+  if (!email || (way !== 'google' && !password)) {
+    return res.status(400).json({ error: "Invalid input" });
   }
 
-  const user = await User.findOne({ email });
+  try {
+    const user = await User.findOne({ email });
 
-  if (user) {
-    if (way !== 'google') {
-      if (!(await argon2.verify(user.password, password))) {
-        return res.status(400).send("Invalid Credentials");
-      }
+    if (!user) {
+      return res.status(400).json({ error: "Invalid credentials" });
+    }
+
+    if (way !== 'google' && !(await argon2.verify(user.password, password))) {
+      return res.status(400).json({ error: "Invalid credentials" });
     }
 
     const jwtSecret = user.role === 'admin' ? process.env.JWT_SECRET_Admin : process.env.JWT_SECRET;
@@ -33,12 +29,20 @@ const login = async (req, res) => {
       { expiresIn: "30d" }
     );
 
-    user.token = token;
-
-    res.status(200).json({ msg: "Login Successfully!", TOKEN: token, user });
-  } else {
-    res.status(400).send("Invalid Credentials");
+    res.status(200).json({ 
+      msg: "Login Successfully!", 
+      TOKEN: token, 
+      user: {
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Server error" });
   }
 };
 
 module.exports = { login };
+
