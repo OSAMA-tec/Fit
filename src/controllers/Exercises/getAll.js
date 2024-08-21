@@ -11,10 +11,7 @@ const getExercisesWithPaidStatus = async (userId, query, page = 1, limit = 30) =
 
   if (user.role === 'admin') {
     let paid = { $in: [true, false] };
-    const exercises = await Exercise.find({ ...query, paid })
-      .sort({ AI: -1 }) // Sort by AI in descending order (true comes before false)
-      .skip((page - 1) * limit)
-      .limit(limit);
+    const exercises= await Exercise.find({...query,paid}).skip((page - 1) * limit).limit(limit);
     return { exercises };
   }
 
@@ -37,10 +34,7 @@ const getExercisesWithPaidStatus = async (userId, query, page = 1, limit = 30) =
     paid = { $in: [true, false] };
   }
 
-  const exercises = await Exercise.find({ ...query, paid })
-    .sort({ AI: -1 }) // Sort by AI in descending order (true comes before false)
-    .skip((page - 1) * limit)
-    .limit(limit);
+  const exercises = await Exercise.find({ ...query, paid }).skip((page - 1) * limit).limit(limit);
 
   return { message: `Subscription period left: ${remainingDays} days`, exercises };
 };
@@ -51,11 +45,7 @@ const getAllExercises = async (req, res) => {
     const limit = 30; 
     const skip = (page - 1) * limit; 
 
-    const exercises = await Exercise.find()
-      .sort({ AI: -1 }) 
-      .skip(skip)
-      .limit(limit);
-
+    const exercises = await Exercise.find().skip(skip).limit(limit);
     if (!exercises.length) {
       return res.status(404).json({ message: 'Exercise not found' });
     }
@@ -63,7 +53,7 @@ const getAllExercises = async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
-}
+};
 
 const getExercisesByLevel = async (req, res) => {
   try {
@@ -73,7 +63,7 @@ const getExercisesByLevel = async (req, res) => {
     if (!level) {
       return res.status(404).json({ message: "level not passed" });
     }
-    const exercises = await getExercisesWithPaidStatus(userId, { level }, page);
+    const exercises = await getExercisesWithPaidStatus(userId, { level },page);
     if (!exercises) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -91,23 +81,30 @@ const getExercisesByBodyPart = async (req, res) => {
   try {
     const userId = req.user.id;
     let bodyPart = req.query.bodyPart;
-    
+    // if(bodyPart==='upper legs'){
+    //   bodyPart='upper Legs';
+    // }
+    // if(bodyPart==='lower legs'){
+    //   bodyPart='lower Legs';
+    // }
     async function printExerciseCountByNameAndBodyPart() {
       try {
+        // Perform the aggregation
         const results = await Exercise.aggregate([
           {
             $group: {
-              _id: { name: "$name", bodyPart: "$bodyPart" },
-              count: { $sum: 1 }
+              _id: { name: "$name", bodyPart: "$bodyPart" }, // Group by name and bodyPart
+              count: { $sum: 1 } // Count the documents in each group
             }
           },
           {
             $match: {
-              "count": { $gt: 1 }
+              "count": { $gt: 1 } // Match only groups where count is greater than 1
             }
           }
         ]);
-
+    
+        // If results are found, print them
         if (results && results.length > 0) {
           results.forEach((result) => {
             console.log(`Exercise name: ${result._id.name}, Body Part: ${result._id.bodyPart}, Count: ${result.count}`);
@@ -119,11 +116,12 @@ const getExercisesByBodyPart = async (req, res) => {
         console.error('Error fetching exercise count:', err);
       }
     }
-
+    
+    // Call the function to print the count
     printExerciseCountByNameAndBodyPart();
-    const page = parseInt(req.query.page) || 1;
+    const page = parseInt(req.query.page)
 
-    const exercises = await getExercisesWithPaidStatus(userId, { bodyPart }, page);
+    const exercises = await getExercisesWithPaidStatus(userId, { bodyPart },page);
     if (!exercises) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -137,9 +135,9 @@ const getExercisesByDayOfWeek = async (req, res) => {
   try {
     const userId = req.user.id;
     const dayOfWeek = req.query.dayOfWeek;
-    const page = parseInt(req.query.page) || 1;
+    const page = parseInt(req.query.page)
 
-    const exercises = await getExercisesWithPaidStatus(userId, { dayOfWeek }, page);
+    const exercises = await getExercisesWithPaidStatus(userId, { dayOfWeek },page);
     if (!exercises) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -163,7 +161,7 @@ const getExercises = async (req, res) => {
     const bodyPart = req.query.bodyPart;
     const dayOfWeek = req.query.dayOfWeek;
 
-    const exercises = await getExercisesWithPaidStatus(userId, { level, bodyPart, dayOfWeek }, page);
+    const exercises = await getExercisesWithPaidStatus(userId, { level, bodyPart, dayOfWeek },page);
     if (!exercises || exercises.length === 0) {
       return res.status(404).json({ message: 'No exercises found for the given criteria' });
     }
@@ -191,9 +189,9 @@ const getExerciseById = async (req, res) => {
     if (exercises.length === 0) {
       return res.status(404).json({ message: 'No exercises found' });
     }
-
+    
     const randomExercises = [];
-    for (let i = 0; i < 5; i++) {
+    for(let i=0;i<5;i++){
       if (exercises.length === 0) {
         break;
       }
@@ -203,7 +201,7 @@ const getExerciseById = async (req, res) => {
 
       exercises.splice(randomIndex, 1);
     }
-
+    
     res.status(200).json(randomExercises);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -214,7 +212,7 @@ const getExerciseById = async (req, res) => {
 
 const getExerciseId = async (req, res) => {
   try {
-    const Id = req.query.id;
+    const Id = req.query.id; 
 
 
     const exercise = await Exercise.findById(Id);
@@ -230,28 +228,27 @@ const getExerciseId = async (req, res) => {
 };
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
   }
   return array;
 }
 
 const getPaidExercises = async (req, res) => {
-  try {
-    const exercises = await Exercise.find({ paid: true }).sort({ AI: -1 });
+try {
+  const exercises = await Exercise.find({ paid: true });
 
-    if (!exercises || exercises.length === 0) {
-      return res.status(404).json({ message: 'No paid exercises found' });
-    }
-
-    const shuffledExercises = shuffleArray(exercises);
-
-    res.status(200).json(shuffledExercises.slice(0, 100));
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+  if (!exercises || exercises.length === 0) {
+    return res.status(404).json({ message: 'No paid exercises found' });
   }
-};
 
+  const shuffledExercises = shuffleArray(exercises);
+
+  res.status(200).json(shuffledExercises.slice(0, 100));
+} catch (error) {
+  res.status(500).json({ message: error.message });
+}
+};
 
 
 
