@@ -238,7 +238,7 @@ function shuffleArray(array) {
 
 const getPaidExercises = async (req, res) => {
   try {
-    const exercises = await Exercise.find({ paid: true });
+    const exercises = await Exercise.find({ paid: true }).sort({ AI: -1 });
 
     if (!exercises || exercises.length === 0) {
       return res.status(404).json({ message: 'No paid exercises found' });
@@ -251,6 +251,7 @@ const getPaidExercises = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 
 
