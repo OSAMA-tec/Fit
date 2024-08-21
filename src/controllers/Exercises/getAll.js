@@ -11,7 +11,10 @@ const getExercisesWithPaidStatus = async (userId, query, page = 1, limit = 30) =
 
   if (user.role === 'admin') {
     let paid = { $in: [true, false] };
-    const exercises= await Exercise.find({...query,paid}).skip((page - 1) * limit).limit(limit);
+    const exercises = await Exercise.find({...query, paid})
+      .sort({ AI: -1 }) // Sort by AI field in descending order (true first)
+      .skip((page - 1) * limit)
+      .limit(limit);
     return { exercises };
   }
 
@@ -23,7 +26,7 @@ const getExercisesWithPaidStatus = async (userId, query, page = 1, limit = 30) =
   const plan = await Plan.findById(user.plan);
   const startDate = plan.startDate;
   const durationInDays = plan.durationInDays;
-  const endDate = startDate.setDate(startDate.getDate() + durationInDays);
+  const endDate = new Date(startDate.getTime() + durationInDays * 24 * 60 * 60 * 1000);
   const currentDate = new Date();
   const remainingDays = Math.ceil((endDate - currentDate) / (1000 * 60 * 60 * 24));
 
@@ -34,10 +37,14 @@ const getExercisesWithPaidStatus = async (userId, query, page = 1, limit = 30) =
     paid = { $in: [true, false] };
   }
 
-  const exercises = await Exercise.find({ ...query, paid }).skip((page - 1) * limit).limit(limit);
+  const exercises = await Exercise.find({ ...query, paid })
+    .sort({ AI: -1 }) // Sort by AI field in descending order (true first)
+    .skip((page - 1) * limit)
+    .limit(limit);
 
   return { message: `Subscription period left: ${remainingDays} days`, exercises };
 };
+
 const getAllExercises = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -45,7 +52,11 @@ const getAllExercises = async (req, res) => {
     const limit = 30; 
     const skip = (page - 1) * limit; 
 
-    const exercises = await Exercise.find().skip(skip).limit(limit);
+    const exercises = await Exercise.find()
+      .sort({ AI: -1 }) // Sort by AI field in descending order (true first)
+      .skip(skip)
+      .limit(limit);
+
     if (!exercises.length) {
       return res.status(404).json({ message: 'Exercise not found' });
     }
@@ -55,15 +66,16 @@ const getAllExercises = async (req, res) => {
   }
 };
 
+
 const getExercisesByLevel = async (req, res) => {
   try {
     const userId = req.user.id;
     const level = req.query.level;
-    const page = parseInt(req.query.page)
+    const page = parseInt(req.query.page) || 1; // Default to page 1 if not provided
     if (!level) {
       return res.status(404).json({ message: "level not passed" });
     }
-    const exercises = await getExercisesWithPaidStatus(userId, { level },page);
+    const exercises = await getExercisesWithPaidStatus(userId, { level }, page);
     if (!exercises) {
       return res.status(404).json({ message: 'User not found' });
     }
