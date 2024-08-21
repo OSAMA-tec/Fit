@@ -4,6 +4,7 @@ const {getAllExercises,getExercises,getExercisesByBodyPart,getExercisesByDayOfWe
 const {createExercise,upload} = require('../controllers/Exercises/createExercise');
 const {addBodyParts} = require('../controllers/BodyParts/uploadBody');
 const {getAllBodyParts} = require('../controllers/BodyParts/getBody');
+const {getAiExercises,generateExercises,migrateExercises} = require('../controllers/Exercises/aiExercise');
 
 
 
@@ -47,6 +48,13 @@ router.post('/body-part/upload', addBodyParts);
 
 //Get body Parts
 router.get('/body/part', getAllBodyParts);
+
+
+
+
+router.get('/ai/exercise', generateExercises);
+router.get('/ai/exercise/get', getAiExercises);
+router.get('/ai/exercise/move', migrateExercises);
 
 
 

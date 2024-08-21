@@ -25,7 +25,10 @@ const ExerciseSchema = new Schema({
   dayOfWeek: {
     type: String,
   },
-  
+  AI: {
+    type: Boolean,
+    default:false
+  },
   backgroundPic: {
     type: String,
   },
