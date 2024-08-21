@@ -23,7 +23,7 @@ app.use(cors())
 dbConnection();
 app.use(express.json()); 
 
-
+//
 app.use('/api', signupRoute);
 app.use('/api', exerciseRoute);
 app.use('/api', planRoute);
