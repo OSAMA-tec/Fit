@@ -12,6 +12,7 @@ const ExerciseSchema = new Schema({
   },
   about: {
     type: String,
+    default:""
   },
   bodyPart: {
     type: String,

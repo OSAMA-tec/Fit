@@ -45,7 +45,7 @@ const getAllExercises = async (req, res) => {
     const limit = 30; 
     const skip = (page - 1) * limit; 
 
-    const exercises = await Exercise.find().skip(skip).limit(limit);
+    const exercises = await Exercise.find({AI:true}).skip(skip).limit(limit);
     if (!exercises.length) {
       return res.status(404).json({ message: 'Exercise not found' });
     }
